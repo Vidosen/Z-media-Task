@@ -19,6 +19,28 @@ namespace ZMediaTask.Application.Battle
             Side = side;
             Cast = cast;
             AffectedCount = affectedCount;
+            Position = null;
+            DamageApplied = null;
+        }
+
+        public BattleEvent(
+            BattleEventKind kind,
+            float timeSec,
+            int? unitId,
+            ArmySide? side,
+            WrathCastCommand? cast,
+            int? affectedCount,
+            BattlePoint? position,
+            int? damageApplied)
+        {
+            Kind = kind;
+            TimeSec = timeSec;
+            UnitId = unitId;
+            Side = side;
+            Cast = cast;
+            AffectedCount = affectedCount;
+            Position = position;
+            DamageApplied = damageApplied;
         }
 
         public BattleEventKind Kind { get; }
@@ -32,5 +54,9 @@ namespace ZMediaTask.Application.Battle
         public WrathCastCommand? Cast { get; }
 
         public int? AffectedCount { get; }
+
+        public BattlePoint? Position { get; }
+
+        public int? DamageApplied { get; }
     }
 }

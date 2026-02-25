@@ -4,6 +4,7 @@ namespace ZMediaTask.Application.Battle
     {
         UnitKilled = 0,
         WrathCastStarted = 1,
-        WrathImpactApplied = 2
+        WrathImpactApplied = 2,
+        UnitDamaged = 3
     }
 }

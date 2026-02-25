@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -7,14 +8,14 @@ using ZMediaTask.Application.Battle;
 using ZMediaTask.Domain.Army;
 using ZMediaTask.Domain.Combat;
 using ZMediaTask.Domain.Traits;
+using ZMediaTask.Presentation.Services;
 
 namespace ZMediaTask.Tests.PlayMode
 {
     public class DeathPipelineIntegrationTests : PlayModeTestFixture
     {
         [UnityTest]
-        [Ignore("Iteration 10 — ragdoll, fade VFX, and despawn pipeline not yet implemented.")]
-        public IEnumerator PlayMode_DeathRagdoll_Fades_AndDespawns()
+        public IEnumerator PlayMode_DeathTracker_DetectsDeathsAfterBattle()
         {
             // Arrange: 1v1 where left one-shots right
             var armies = new ArmyPair(
@@ -40,7 +41,16 @@ namespace ZMediaTask.Tests.PlayMode
             var deadUnits = BattleLoop.Context.Units.Where(u => !u.Combat.IsAlive).ToList();
             Assert.IsTrue(deadUnits.Count > 0, "At least one unit should be dead.");
 
-            // TODO (Iteration 10): Verify ragdoll activation, fade-out VFX, and despawn timing
+            // DeathTracker verification
+            var deathTracker = new DeathTracker();
+            var newlyDead = deathTracker.DetectNewDeaths(BattleLoop.Context.Units);
+            Assert.AreEqual(deadUnits.Count, newlyDead.Count,
+                "DeathTracker should detect all dead units on first call.");
+
+            // Second call should return no new deaths
+            var secondCall = deathTracker.DetectNewDeaths(BattleLoop.Context.Units);
+            Assert.AreEqual(0, secondCall.Count,
+                "DeathTracker should not re-report already-tracked deaths.");
 
             yield return null;
         }

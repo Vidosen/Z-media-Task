@@ -163,6 +163,40 @@ namespace ZMediaTask.Tests.EditMode.Application.Battle
         }
 
         [Test]
+        public void Step_EmitsUnitDamagedEvent_WhenAttackLands()
+        {
+            var processor = CreateProcessor();
+            // Place units within attack range so an attack lands
+            var units = new[]
+            {
+                MakeUnit(1, ArmySide.Left, 0f, 0f, hp: 100, atk: 30, speed: 5f),
+                MakeUnit(2, ArmySide.Right, 1f, 0f, hp: 100, atk: 10, speed: 5f)
+            };
+            var context = MakeContext(units);
+            var input = new BattleStepInput(context, deltaTimeSec: 0.02f, currentTimeSec: 0.02f);
+
+            processor.Step(input);
+
+            var stepEvents = processor.LastStepEvents;
+            Assert.IsTrue(stepEvents.Count > 0, "Should emit at least one UnitDamaged event.");
+
+            var found = false;
+            for (var i = 0; i < stepEvents.Count; i++)
+            {
+                var evt = stepEvents[i];
+                if (evt.Kind != BattleEventKind.UnitDamaged) continue;
+
+                found = true;
+                Assert.IsTrue(evt.UnitId.HasValue, "UnitDamaged event should have a UnitId.");
+                Assert.IsTrue(evt.DamageApplied.HasValue, "UnitDamaged event should have DamageApplied.");
+                Assert.Greater(evt.DamageApplied.Value, 0, "DamageApplied should be > 0.");
+                Assert.IsTrue(evt.Position.HasValue, "UnitDamaged event should have a Position.");
+            }
+
+            Assert.IsTrue(found, "Should contain at least one UnitDamaged event.");
+        }
+
+        [Test]
         public void Step_AdvancesElapsedTime()
         {
             var processor = CreateProcessor();

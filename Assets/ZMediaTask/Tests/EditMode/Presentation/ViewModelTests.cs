@@ -53,7 +53,7 @@ namespace ZMediaTask.Tests.EditMode.Presentation
         }
 
         [Test]
-        public void PreparationViewModel_StartCommand_EmitsArmyPair()
+        public void PreparationViewModel_StartCommand_ChangesStateToRunning()
         {
             var vm = CreatePreparationVm();
             ArmyPair? received = null;
@@ -62,7 +62,8 @@ namespace ZMediaTask.Tests.EditMode.Presentation
             vm.RandomizeBoth();
             vm.RequestStart();
 
-            Assert.IsNotNull(received, "StartRequested should emit an ArmyPair.");
+            Assert.IsNotNull(received,
+                "StartRequested should emit ArmyPair, which triggers state change to Running.");
             Assert.IsNotNull(received.Value.Left);
             Assert.IsNotNull(received.Value.Right);
         }

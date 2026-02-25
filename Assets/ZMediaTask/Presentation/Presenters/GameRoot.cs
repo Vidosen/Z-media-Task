@@ -9,6 +9,7 @@ namespace ZMediaTask.Presentation.Presenters
     {
         [SerializeField] private ScreenFlowPresenter _screenFlow;
         [SerializeField] private BattleLoopRunnerPresenter _battleRunner;
+        [SerializeField] private BattleVfxPresenter _vfxPresenter;
 
         [Inject] private ArmyRandomizationUseCase _randomizationUseCase;
         [Inject] private BattleLoopService _battleLoopService;
@@ -24,6 +25,11 @@ namespace ZMediaTask.Presentation.Presenters
                 _tryCastWrathUseCase);
 
             _battleRunner.Construct(_battleLoopService);
+
+            if (_vfxPresenter != null)
+            {
+                _vfxPresenter.Initialize();
+            }
         }
     }
 }

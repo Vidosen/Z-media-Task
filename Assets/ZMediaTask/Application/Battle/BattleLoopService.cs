@@ -113,6 +113,12 @@ namespace ZMediaTask.Application.Battle
             }
 
             var next = _stepProcessor.Step(new BattleStepInput(_context, deltaTimeSec, currentTimeSec));
+
+            if (_stepProcessor is AutoBattleStepProcessor auto)
+            {
+                _lastTickEvents.AddRange(auto.LastStepEvents);
+            }
+
             var unitsAfterStep = CopyUnits(next.Units);
             ApplyDueWrathImpacts(unitsAfterStep, currentTimeSec);
             var winner = GetWinner(unitsAfterStep);

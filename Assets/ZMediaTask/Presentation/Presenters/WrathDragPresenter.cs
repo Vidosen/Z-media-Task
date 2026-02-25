@@ -1,7 +1,7 @@
+using R3;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using ZMediaTask.Domain.Combat;
-using ZMediaTask.Infrastructure.Config.Combat;
+using ZMediaTask.Presentation.Input;
 
 namespace ZMediaTask.Presentation.Presenters
 {
@@ -10,45 +10,43 @@ namespace ZMediaTask.Presentation.Presenters
         [SerializeField] private ScreenFlowPresenter _screenFlow;
         [SerializeField] private Camera _mainCamera;
         [SerializeField] private LayerMask _arenaLayer;
+        [SerializeField] private PointerDragInputAdapter _pointerInput;
 
-        private bool _isDragging;
+        private readonly CompositeDisposable _disposables = new();
 
-        private void Update()
+        private void Start()
         {
-            if (_screenFlow == null || _screenFlow.WrathVm == null)
+            if (_pointerInput == null) return;
+
+            _pointerInput.DragStarted.Subscribe(OnDragStarted).AddTo(_disposables);
+            _pointerInput.DragEnded.Subscribe(OnDragEnded).AddTo(_disposables);
+        }
+
+        private void OnDestroy()
+        {
+            _disposables.Dispose();
+        }
+
+        private void OnDragStarted(Vector2 screenPos)
+        {
+            if (_screenFlow == null || _screenFlow.WrathVm == null) return;
+            if (!_screenFlow.WrathVm.CanCast.CurrentValue) return;
+
+            _screenFlow.WrathVm.SetDragging(true);
+        }
+
+        private void OnDragEnded(Vector2 screenPos)
+        {
+            if (_screenFlow == null || _screenFlow.WrathVm == null) return;
+
+            var wasDragging = _screenFlow.WrathVm.IsDragging.CurrentValue;
+            _screenFlow.WrathVm.SetDragging(false);
+
+            if (!wasDragging) return;
+
+            if (TryGetArenaPoint(screenPos, out var point))
             {
-                return;
-            }
-
-            if (!_screenFlow.WrathVm.CanCast.CurrentValue)
-            {
-                if (_isDragging)
-                {
-                    _isDragging = false;
-                    _screenFlow.WrathVm.SetDragging(false);
-                }
-
-                return;
-            }
-
-            var pointer = Pointer.current;
-            if (pointer == null) return;
-
-            if (pointer.press.wasPressedThisFrame)
-            {
-                _isDragging = true;
-                _screenFlow.WrathVm.SetDragging(true);
-            }
-
-            if (pointer.press.wasReleasedThisFrame && _isDragging)
-            {
-                _isDragging = false;
-                _screenFlow.WrathVm.SetDragging(false);
-
-                if (TryGetArenaPoint(pointer.position.ReadValue(), out var point))
-                {
-                    _screenFlow.TryCastWrath(point);
-                }
+                _screenFlow.TryCastWrath(point);
             }
         }
 

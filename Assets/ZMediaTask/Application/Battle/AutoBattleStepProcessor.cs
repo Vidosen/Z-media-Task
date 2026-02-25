@@ -12,6 +12,9 @@ namespace ZMediaTask.Application.Battle
         private readonly OnUnitKilledUseCase _onUnitKilledUseCase;
         private readonly AttackConfig _attackConfig;
         private readonly MovementConfig _movementConfig;
+        private readonly List<BattleEvent> _stepEvents = new();
+
+        public IReadOnlyList<BattleEvent> LastStepEvents => _stepEvents;
 
         public AutoBattleStepProcessor(
             MovementService movementService,
@@ -29,6 +32,7 @@ namespace ZMediaTask.Application.Battle
 
         public BattleContext Step(BattleStepInput input)
         {
+            _stepEvents.Clear();
             var units = CopyUnits(input.Context.Units);
             var currentTime = input.CurrentTimeSec;
             var deltaTime = input.DeltaTimeSec;
@@ -131,6 +135,16 @@ namespace ZMediaTask.Application.Battle
 
                 units[attackerIdx] = attacker.WithCombat(result.AttackerAfter);
                 units[targetIdx] = target.WithCombat(result.TargetAfter);
+
+                _stepEvents.Add(new BattleEvent(
+                    BattleEventKind.UnitDamaged,
+                    currentTime,
+                    target.UnitId,
+                    target.Side,
+                    cast: null,
+                    affectedCount: null,
+                    position: target.Combat.Position,
+                    damageApplied: result.DamageApplied));
 
                 if (!result.TargetAfter.IsAlive)
                 {

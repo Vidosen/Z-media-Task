@@ -15,6 +15,7 @@ namespace ZMediaTask.Presentation.Presenters
         [SerializeField] private UIDocument _uiDocument;
         [SerializeField] private BattleLoopRunnerPresenter _battleRunner;
         [SerializeField] private BattleUnitsPresenter _unitsPresenter;
+        [SerializeField] private BattleVfxPresenter _vfxPresenter;
 
         private readonly ReactiveProperty<GameFlowState> _currentState = new(GameFlowState.MainMenu);
         private readonly CompositeDisposable _disposables = new();
@@ -224,6 +225,11 @@ namespace ZMediaTask.Presentation.Presenters
                 _wrathVm.UpdateFromMeter(meter);
             }
 
+            if (_vfxPresenter != null && _battleLoopService.LastTickEvents.Count > 0)
+            {
+                _vfxPresenter.ProcessEvents(_battleLoopService.LastTickEvents);
+            }
+
             if (_unitsPresenter != null)
             {
                 _unitsPresenter.SyncPositions(_battleLoopService.Context);
@@ -288,6 +294,8 @@ namespace ZMediaTask.Presentation.Presenters
                 {
                     _unitsPresenter.ClearUnits();
                 }
+
+                _vfxPresenter?.ClearAll();
             }
         }
 
