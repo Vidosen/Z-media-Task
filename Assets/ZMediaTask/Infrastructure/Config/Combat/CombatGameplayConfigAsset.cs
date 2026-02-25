@@ -28,6 +28,11 @@ namespace ZMediaTask.Infrastructure.Config.Combat
         [SerializeField] private int _wrathDamage = 80;
         [SerializeField] private float _impactDelaySeconds = 0.35f;
 
+        [Header("Knockback")]
+        [SerializeField] private float _knockbackImpulseStrength = 6f;
+        [SerializeField] private float _knockbackDecaySpeed = 50f;
+        [SerializeField] private float _knockbackMinVelocityThreshold = 0.001f;
+
         [Header("Arena")]
         [SerializeField] private float _arenaMinX = -15f;
         [SerializeField] private float _arenaMaxX = 15f;
@@ -49,6 +54,11 @@ namespace ZMediaTask.Infrastructure.Config.Combat
         public WrathConfig BuildWrathConfig()
         {
             return new WrathConfig(_chargePerKill, _maxCharge, _wrathRadius, _wrathDamage, _impactDelaySeconds);
+        }
+
+        public KnockbackConfig BuildKnockbackConfig()
+        {
+            return new KnockbackConfig(_knockbackImpulseStrength, _knockbackDecaySpeed, _knockbackMinVelocityThreshold);
         }
 
         public ArenaBounds BuildArenaBounds()

@@ -44,5 +44,11 @@ namespace ZMediaTask.Domain.Combat
         public IReadOnlyList<BattlePoint> CurrentPath => _currentPath;
 
         public BattlePoint? LastPathTargetPosition { get; }
+
+        public MovementAgentState WithPosition(BattlePoint position)
+        {
+            return new MovementAgentState(
+                UnitId, IsAlive, Speed, position, TargetId, CurrentPath, LastPathTargetPosition);
+        }
     }
 }

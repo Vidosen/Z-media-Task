@@ -282,6 +282,7 @@ MonoBehaviour:
   _cubePrefab: {fileID: 6467659882340294610, guid: a640f2dda331844f7b473af0b29db5eb, type: 3}
   _spherePrefab: {fileID: 7989990373721561862, guid: 93e30a01a5a2044be87ab7eb43eca966, type: 3}
   _unitsParent: {fileID: 675562948}
+  _unitFlashShader: {fileID: 4800000, guid: f794201bc56384d77bc852fcc146a012, type: 3}
 --- !u!4 &493659752
 Transform:
   m_ObjectHideFlags: 0
@@ -1135,67 +1136,6 @@ MonoBehaviour:
   _lightningVfxPrefab: {fileID: 13301048646092075, guid: 334ccdade87a4194b9f1855c484967dc, type: 3}
   _telegraphPrefab: {fileID: 7844011673192117355, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
   _vfxPool: {fileID: 106924092}
---- !u!1001 &8204992335369937966
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3209266341916212567, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3209266341916212567, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3209266341916212567, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3209266341916212567, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3209266341916212567, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3209266341916212567, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3209266341916212567, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3209266341916212567, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3209266341916212567, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3209266341916212567, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5769837564843157529, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 079e50da1c6c740b5b4e99bb8ba50824, type: 2}
-    - target: {fileID: 7844011673192117355, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
-      propertyPath: m_Name
-      value: WrathTelegraph
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1d92e8a3796444c34adc9afd3aab495f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1207,4 +1147,3 @@ SceneRoots:
   - {fileID: 191996795}
   - {fileID: 667442856}
   - {fileID: 1879086488}
-  - {fileID: 8204992335369937966}

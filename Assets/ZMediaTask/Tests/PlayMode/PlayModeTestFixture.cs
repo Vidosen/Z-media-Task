@@ -83,8 +83,11 @@ namespace ZMediaTask.Tests.PlayMode
             TryCastWrathUseCase = new TryCastWrathUseCase(
                 ArmySide.Left, TestWrathConfig, WrathService, wrathValidator);
 
+            var knockbackService = new KnockbackService();
+            var knockbackConfig = new KnockbackConfig(6f, 50f, 0.001f);
             StepProcessor = new AutoBattleStepProcessor(
-                MovementService, AttackService, OnUnitKilledUseCase, TestAttackConfig, TestMovementConfig);
+                MovementService, AttackService, OnUnitKilledUseCase, TestAttackConfig, TestMovementConfig,
+                knockbackService, knockbackConfig);
 
             ContextFactory = new BattleContextFactory(new LineFormationStrategy());
             BattleLoop = new BattleLoopService(

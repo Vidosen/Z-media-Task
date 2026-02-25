@@ -3,6 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using ZMediaTask.Application.Battle;
 using ZMediaTask.Domain.Army;
+using ZMediaTask.Domain.Combat;
 using ZMediaTask.Domain.Traits;
 using ZMediaTask.Presentation.Services;
 
@@ -17,15 +18,21 @@ namespace ZMediaTask.Presentation.Presenters
         [SerializeField] private GameObject _cubePrefab;
         [SerializeField] private GameObject _spherePrefab;
         [SerializeField] private Transform _unitsParent;
+        [SerializeField] private Shader _unitFlashShader;
+
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
         private readonly Dictionary<int, GameObject> _unitObjects = new();
+        private readonly Dictionary<int, Renderer> _unitRenderers = new();
         private readonly HashSet<int> _dyingUnitIds = new();
         private DeathTracker _deathTracker;
+        private DamageFlashTracker _flashTracker;
 
         public void SpawnUnits(BattleContext context)
         {
             ClearUnits();
             _deathTracker = new DeathTracker();
+            _flashTracker = new DamageFlashTracker();
 
             for (var i = 0; i < context.Units.Count; i++)
             {
@@ -42,6 +49,12 @@ namespace ZMediaTask.Presentation.Presenters
 
                 ApplyVisualStyle(go, unit.Side, unit.Size);
                 _unitObjects[unit.UnitId] = go;
+
+                var renderer = go.GetComponentInChildren<Renderer>();
+                if (renderer != null)
+                {
+                    _unitRenderers[unit.UnitId] = renderer;
+                }
             }
         }
 
@@ -99,9 +112,7 @@ namespace ZMediaTask.Presentation.Presenters
                 }
 
                 go.transform.position = new Vector3(
-                    unit.Movement.Position.X,
-                    0.5f,
-                    unit.Movement.Position.Z);
+                    unit.Movement.Position.X, 0.5f, unit.Movement.Position.Z);
             }
         }
 
@@ -117,9 +128,20 @@ namespace ZMediaTask.Presentation.Presenters
             }
 
             _unitObjects.Clear();
+            _unitRenderers.Clear();
             _dyingUnitIds.Clear();
             _deathTracker?.Reset();
             _deathTracker = null;
+            _flashTracker?.Clear();
+            _flashTracker = null;
+        }
+
+        public void FlashUnit(int unitId)
+        {
+            if (_flashTracker != null && _unitRenderers.TryGetValue(unitId, out var renderer))
+            {
+                _flashTracker.Flash(unitId, renderer);
+            }
         }
 
         private void RunDeathSequence(GameObject go, BattleUnitRuntime deadUnit, IReadOnlyList<BattleUnitRuntime> allUnits)
@@ -150,7 +172,14 @@ namespace ZMediaTask.Presentation.Presenters
             {
                 var mat = renderer.material;
                 sequence.Append(
-                    DOTween.ToAlpha(() => mat.color, c => mat.color = c, 0f, FadeDuration));
+                    DOTween.To(
+                        () => mat.GetColor(BaseColorId).a,
+                        a =>
+                        {
+                            var c = mat.GetColor(BaseColorId);
+                            mat.SetColor(BaseColorId, new Color(c.r, c.g, c.b, a));
+                        },
+                        0f, FadeDuration));
             }
             else
             {
@@ -241,7 +270,16 @@ namespace ZMediaTask.Presentation.Presenters
             var renderer = go.GetComponentInChildren<Renderer>();
             if (renderer != null)
             {
-                renderer.material.color = color;
+                if (_unitFlashShader != null)
+                {
+                    var mat = new Material(_unitFlashShader);
+                    mat.SetColor(BaseColorId, color);
+                    renderer.material = mat;
+                }
+                else
+                {
+                    renderer.material.color = color;
+                }
             }
 
             var scale = size == UnitSize.Big ? 1.0f : 0.6f;

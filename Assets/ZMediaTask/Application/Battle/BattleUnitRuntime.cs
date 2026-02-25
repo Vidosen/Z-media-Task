@@ -13,7 +13,8 @@ namespace ZMediaTask.Application.Battle
             UnitSize size,
             UnitColor color,
             MovementAgentState movement,
-            CombatUnitState combat)
+            CombatUnitState combat,
+            KnockbackState knockback = default)
         {
             UnitId = unitId;
             Side = side;
@@ -22,6 +23,7 @@ namespace ZMediaTask.Application.Battle
             Color = color;
             Movement = movement;
             Combat = combat;
+            Knockback = knockback;
         }
 
         public int UnitId { get; }
@@ -38,14 +40,21 @@ namespace ZMediaTask.Application.Battle
 
         public CombatUnitState Combat { get; }
 
+        public KnockbackState Knockback { get; }
+
         public BattleUnitRuntime WithMovement(MovementAgentState movement)
         {
-            return new BattleUnitRuntime(UnitId, Side, Shape, Size, Color, movement, Combat);
+            return new BattleUnitRuntime(UnitId, Side, Shape, Size, Color, movement, Combat, Knockback);
         }
 
         public BattleUnitRuntime WithCombat(CombatUnitState combat)
         {
-            return new BattleUnitRuntime(UnitId, Side, Shape, Size, Color, Movement, combat);
+            return new BattleUnitRuntime(UnitId, Side, Shape, Size, Color, Movement, combat, Knockback);
+        }
+
+        public BattleUnitRuntime WithKnockback(KnockbackState knockback)
+        {
+            return new BattleUnitRuntime(UnitId, Side, Shape, Size, Color, Movement, Combat, knockback);
         }
     }
 }

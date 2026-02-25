@@ -12,6 +12,8 @@ namespace ZMediaTask.Application.Battle
         private readonly OnUnitKilledUseCase _onUnitKilledUseCase;
         private readonly AttackConfig _attackConfig;
         private readonly MovementConfig _movementConfig;
+        private readonly KnockbackService _knockbackService;
+        private readonly KnockbackConfig _knockbackConfig;
         private readonly List<BattleEvent> _stepEvents = new();
 
         public IReadOnlyList<BattleEvent> LastStepEvents => _stepEvents;
@@ -21,13 +23,17 @@ namespace ZMediaTask.Application.Battle
             AttackService attackService,
             OnUnitKilledUseCase onUnitKilledUseCase,
             AttackConfig attackConfig,
-            MovementConfig movementConfig)
+            MovementConfig movementConfig,
+            KnockbackService knockbackService = null,
+            KnockbackConfig knockbackConfig = default)
         {
             _movementService = movementService ?? throw new ArgumentNullException(nameof(movementService));
             _attackService = attackService ?? throw new ArgumentNullException(nameof(attackService));
             _onUnitKilledUseCase = onUnitKilledUseCase ?? throw new ArgumentNullException(nameof(onUnitKilledUseCase));
             _attackConfig = attackConfig;
             _movementConfig = movementConfig;
+            _knockbackService = knockbackService;
+            _knockbackConfig = knockbackConfig;
         }
 
         public BattleContext Step(BattleStepInput input)
@@ -37,15 +43,89 @@ namespace ZMediaTask.Application.Battle
             var currentTime = input.CurrentTimeSec;
             var deltaTime = input.DeltaTimeSec;
 
+            ApplyKnockbackDecayAndDisplace(units, deltaTime);
             UpdateMovement(units, deltaTime);
             SyncMovementToCombatPositions(units);
 
             var wrathMeters = CopyWrathMeters(input.Context.WrathMeters);
             ProcessAttacks(units, currentTime, wrathMeters);
+            ApplyNewKnockbackImpulses(units);
             SyncCombatAliveToMovement(units);
 
             var newElapsed = input.Context.ElapsedTimeSec + deltaTime;
             return new BattleContext(units, newElapsed, null, wrathMeters);
+        }
+
+        private void ApplyKnockbackDecayAndDisplace(BattleUnitRuntime[] units, float deltaTime)
+        {
+            if (_knockbackService == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < units.Length; i++)
+            {
+                var u = units[i];
+                if (!u.Movement.IsAlive || !u.Knockback.HasVelocity)
+                {
+                    continue;
+                }
+
+                var displacement = _knockbackService.ComputeDisplacement(u.Knockback, deltaTime);
+                var newPos = DistanceMetrics.Add(u.Movement.Position, displacement);
+                var decayed = _knockbackService.Decay(
+                    u.Knockback, deltaTime, _knockbackConfig.DecaySpeed, _knockbackConfig.MinVelocityThreshold);
+
+                units[i] = u.WithMovement(u.Movement.WithPosition(newPos)).WithKnockback(decayed);
+            }
+        }
+
+        private void ApplyNewKnockbackImpulses(BattleUnitRuntime[] units)
+        {
+            if (_knockbackService == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < _stepEvents.Count; i++)
+            {
+                var evt = _stepEvents[i];
+                if (evt.Kind != BattleEventKind.UnitDamaged || !evt.UnitId.HasValue)
+                {
+                    continue;
+                }
+
+                if (!evt.AttackerPosition.HasValue || !evt.Position.HasValue)
+                {
+                    continue;
+                }
+
+                var targetIdx = FindUnitIndex(units, evt.UnitId.Value);
+                if (targetIdx < 0 || !units[targetIdx].Combat.IsAlive)
+                {
+                    continue;
+                }
+
+                var newKnockback = _knockbackService.ApplyImpulse(
+                    units[targetIdx].Knockback,
+                    evt.AttackerPosition.Value,
+                    evt.Position.Value,
+                    _knockbackConfig.ImpulseStrength);
+                units[targetIdx] = units[targetIdx].WithKnockback(newKnockback);
+            }
+        }
+
+        private static int FindUnitIndex(BattleUnitRuntime[] units, int unitId)
+        {
+            for (var i = 0; i < units.Length; i++)
+            {
+                if (units[i].UnitId == unitId)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         private void UpdateMovement(BattleUnitRuntime[] units, float deltaTime)
@@ -144,7 +224,8 @@ namespace ZMediaTask.Application.Battle
                     cast: null,
                     affectedCount: null,
                     position: target.Combat.Position,
-                    damageApplied: result.DamageApplied));
+                    damageApplied: result.DamageApplied,
+                    attackerPosition: attacker.Combat.Position));
 
                 if (!result.TargetAfter.IsAlive)
                 {

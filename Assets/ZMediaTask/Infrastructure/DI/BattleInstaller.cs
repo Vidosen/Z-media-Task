@@ -29,11 +29,13 @@ namespace ZMediaTask.Infrastructure.DI
             var movementConfig = _combatConfigAsset.BuildMovementConfig();
             var attackConfig = _combatConfigAsset.BuildAttackConfig();
             var wrathConfig = _combatConfigAsset.BuildWrathConfig();
+            var knockbackConfig = _combatConfigAsset.BuildKnockbackConfig();
             var arenaBounds = _combatConfigAsset.BuildArenaBounds();
 
             builder.RegisterValue(movementConfig);
             builder.RegisterValue(attackConfig);
             builder.RegisterValue(wrathConfig);
+            builder.RegisterValue(knockbackConfig);
             builder.RegisterValue(arenaBounds);
 
             builder.RegisterFactory<IRandomProvider>(
@@ -94,13 +96,17 @@ namespace ZMediaTask.Infrastructure.DI
             builder.RegisterType(typeof(DistanceUnitQueryInRadius),
                 new[] { typeof(IUnitQueryInRadius) }, Lifetime.Singleton, Resolution.Lazy);
 
+            builder.RegisterType(typeof(KnockbackService), Lifetime.Singleton, Resolution.Lazy);
+
             builder.RegisterFactory<IBattleStepProcessor>(
                 c => new AutoBattleStepProcessor(
                     c.Resolve<MovementService>(),
                     c.Resolve<AttackService>(),
                     c.Resolve<OnUnitKilledUseCase>(),
                     attackConfig,
-                    movementConfig),
+                    movementConfig,
+                    c.Resolve<KnockbackService>(),
+                    knockbackConfig),
                 Lifetime.Singleton, Resolution.Lazy);
 
             var formationStrategy = _formationConfigAsset != null

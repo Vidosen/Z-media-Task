@@ -21,6 +21,7 @@ namespace ZMediaTask.Application.Battle
             AffectedCount = affectedCount;
             Position = null;
             DamageApplied = null;
+            AttackerPosition = null;
         }
 
         public BattleEvent(
@@ -31,7 +32,8 @@ namespace ZMediaTask.Application.Battle
             WrathCastCommand? cast,
             int? affectedCount,
             BattlePoint? position,
-            int? damageApplied)
+            int? damageApplied,
+            BattlePoint? attackerPosition = null)
         {
             Kind = kind;
             TimeSec = timeSec;
@@ -41,6 +43,7 @@ namespace ZMediaTask.Application.Battle
             AffectedCount = affectedCount;
             Position = position;
             DamageApplied = damageApplied;
+            AttackerPosition = attackerPosition;
         }
 
         public BattleEventKind Kind { get; }
@@ -58,5 +61,7 @@ namespace ZMediaTask.Application.Battle
         public BattlePoint? Position { get; }
 
         public int? DamageApplied { get; }
+
+        public BattlePoint? AttackerPosition { get; }
     }
 }

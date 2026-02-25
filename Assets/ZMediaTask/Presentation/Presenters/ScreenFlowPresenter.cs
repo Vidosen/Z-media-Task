@@ -235,6 +235,16 @@ namespace ZMediaTask.Presentation.Presenters
 
             if (_unitsPresenter != null)
             {
+                var events = _battleLoopService.LastTickEvents;
+                for (var i = 0; i < events.Count; i++)
+                {
+                    var evt = events[i];
+                    if (evt.Kind == BattleEventKind.UnitDamaged && evt.UnitId.HasValue)
+                    {
+                        _unitsPresenter.FlashUnit(evt.UnitId.Value);
+                    }
+                }
+
                 _unitsPresenter.SyncPositions(_battleLoopService.Context);
             }
 

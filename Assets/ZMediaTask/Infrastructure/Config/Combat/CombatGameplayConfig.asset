@@ -22,8 +22,11 @@ MonoBehaviour:
   _chargePerKill: 20
   _maxCharge: 100
   _wrathRadius: 4
-  _wrathDamage: 80
+  _wrathDamage: 800
   _impactDelaySeconds: 0.35
+  _knockbackImpulseStrength: 6
+  _knockbackDecaySpeed: 50
+  _knockbackMinVelocityThreshold: 0.001
   _arenaMinX: -15
   _arenaMaxX: 15
   _arenaMinZ: -20
