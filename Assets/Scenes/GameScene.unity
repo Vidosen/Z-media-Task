@@ -958,6 +958,7 @@ MonoBehaviour:
   _traitCatalogAsset: {fileID: 11400000, guid: ca2ff047a88fa4cebbe91c1998731d01, type: 2}
   _weightCatalogAsset: {fileID: 11400000, guid: 47a41790ba4d1420996fe05f0123aa9b, type: 2}
   _combatConfigAsset: {fileID: 11400000, guid: d62f875a660ce4c2ca91a5db3cbcf557, type: 2}
+  _formationConfigAsset: {fileID: 11400000, guid: 5db3a2c06dfbf4cc985037cbb4d2b5ac, type: 2}
 --- !u!1 &2068733922
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,6 +19,7 @@ namespace ZMediaTask.Infrastructure.DI
         [SerializeField] private UnitTraitCatalogAsset _traitCatalogAsset;
         [SerializeField] private UnitTraitWeightCatalogAsset _weightCatalogAsset;
         [SerializeField] private CombatGameplayConfigAsset _combatConfigAsset;
+        [SerializeField] private FormationConfigAsset _formationConfigAsset;
 
         public void InstallBindings(ContainerBuilder builder)
         {
@@ -102,7 +103,16 @@ namespace ZMediaTask.Infrastructure.DI
                     movementConfig),
                 Lifetime.Singleton, Resolution.Lazy);
 
-            builder.RegisterType(typeof(BattleContextFactory), Lifetime.Singleton, Resolution.Lazy);
+            var formationStrategy = _formationConfigAsset != null
+                ? _formationConfigAsset.BuildFormationStrategy()
+                : new LineFormationStrategy();
+            var spawnOffsetX = _formationConfigAsset != null
+                ? _formationConfigAsset.SpawnOffsetX
+                : 8f;
+
+            builder.RegisterFactory<BattleContextFactory>(
+                _ => new BattleContextFactory(formationStrategy, spawnOffsetX),
+                Lifetime.Singleton, Resolution.Lazy);
             builder.RegisterFactory<BattleLoopService>(
                 c => new BattleLoopService(
                     c.Resolve<BattleContextFactory>(),

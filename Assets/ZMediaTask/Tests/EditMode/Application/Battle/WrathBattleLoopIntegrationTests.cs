@@ -127,7 +127,7 @@ namespace ZMediaTask.Tests.EditMode.Application.Battle
         private static BattleLoopService CreateLoop(WrathConfig config)
         {
             return new BattleLoopService(
-                new BattleContextFactory(),
+                new BattleContextFactory(new LineFormationStrategy()),
                 new IdentityStepProcessor(),
                 new DistanceUnitQueryInRadius(),
                 new WrathService(),

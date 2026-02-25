@@ -8,8 +8,19 @@ namespace ZMediaTask.Application.Battle
 {
     public sealed class BattleContextFactory
     {
-        private const float SpawnOffsetX = 8f;
-        private const float SpawnSpacingZ = 1.5f;
+        private IFormationStrategy _formationStrategy;
+        private readonly float _spawnOffsetX;
+
+        public BattleContextFactory(IFormationStrategy formationStrategy, float spawnOffsetX = 8f)
+        {
+            _formationStrategy = formationStrategy ?? throw new ArgumentNullException(nameof(formationStrategy));
+            _spawnOffsetX = spawnOffsetX;
+        }
+
+        public void SetFormationStrategy(IFormationStrategy strategy)
+        {
+            _formationStrategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
+        }
 
         public BattleContext Create(ArmyPair armies)
         {
@@ -24,7 +35,7 @@ namespace ZMediaTask.Application.Battle
             return new BattleContext(units, 0f, null);
         }
 
-        private static int AddArmyUnits(
+        private int AddArmyUnits(
             ZMediaTask.Domain.Army.Army army,
             BattleUnitRuntime[] destination,
             int startIndex,
@@ -41,7 +52,7 @@ namespace ZMediaTask.Application.Battle
                 var speed = Math.Max(0, stats.SPEED);
                 var attack = Math.Max(0, stats.ATK);
                 var attackSpeed = Math.Max(0, stats.ATKSPD);
-                var spawnPosition = BuildSpawnPosition(army.Side, i, unitCount);
+                var spawnPosition = _formationStrategy.ComputePosition(army.Side, i, unitCount, _spawnOffsetX);
 
                 var movement = new MovementAgentState(
                     unitId,
@@ -64,14 +75,6 @@ namespace ZMediaTask.Application.Battle
             }
 
             return index;
-        }
-
-        private static BattlePoint BuildSpawnPosition(ArmySide side, int index, int total)
-        {
-            var x = side == ArmySide.Left ? -SpawnOffsetX : SpawnOffsetX;
-            var centerOffset = (total - 1) * 0.5f;
-            var z = (index - centerOffset) * SpawnSpacingZ;
-            return new BattlePoint(x, z);
         }
     }
 }

@@ -111,7 +111,7 @@ namespace ZMediaTask.Tests.EditMode.Application.Battle
         [Test]
         public void BattleContextFactory_CarriesTraitsFromArmyUnit()
         {
-            var factory = new BattleContextFactory();
+            var factory = new BattleContextFactory(new LineFormationStrategy());
             var left = new ZMediaTask.Domain.Army.Army(ArmySide.Left, new[]
             {
                 new ArmyUnit(UnitShape.Sphere, UnitSize.Big, UnitColor.Red,
@@ -137,7 +137,7 @@ namespace ZMediaTask.Tests.EditMode.Application.Battle
         public void BattleStepProcessor_Step_DoesNotMutateInput()
         {
             var processor = new BattleStepProcessor();
-            var contextFactory = new BattleContextFactory();
+            var contextFactory = new BattleContextFactory(new LineFormationStrategy());
             var context = contextFactory.Create(CreateArmies(leftHp: 100, rightHp: 100));
             var input = new BattleStepInput(context, 0.5f, 10f);
 
@@ -153,7 +153,7 @@ namespace ZMediaTask.Tests.EditMode.Application.Battle
 
         private static BattleLoopService CreateLoop(IBattleStepProcessor processor)
         {
-            return new BattleLoopService(new BattleContextFactory(), processor);
+            return new BattleLoopService(new BattleContextFactory(new LineFormationStrategy()), processor);
         }
 
         private static ArmyPair CreateArmies(int leftHp, int rightHp)

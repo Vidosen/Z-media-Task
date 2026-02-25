@@ -129,7 +129,10 @@ namespace ZMediaTask.Presentation.Presenters
             {
                 if (pair.Left != null && pair.Right != null && _unitsPresenter != null)
                 {
-                    _unitsPresenter.SpawnPreview(pair);
+                    var formation = FormationStrategyPicker.PickRandom(Environment.TickCount);
+                    _battleContextFactory.SetFormationStrategy(formation);
+                    var previewContext = _battleContextFactory.Create(pair);
+                    _unitsPresenter.SpawnPreview(previewContext);
                 }
             }).AddTo(_disposables);
 

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
-using ZMediaTask.Application.Army;
 using ZMediaTask.Application.Battle;
 using ZMediaTask.Domain.Army;
 using ZMediaTask.Domain.Traits;
@@ -11,8 +10,6 @@ namespace ZMediaTask.Presentation.Presenters
 {
     public sealed class BattleUnitsPresenter : MonoBehaviour
     {
-        private const float SpawnOffsetX = 8f;
-        private const float SpawnSpacingZ = 1.5f;
         private const float DeathImpulseForce = 5f;
         private const float FadeStartDelay = 0.5f;
         private const float FadeDuration = 1.0f;
@@ -48,12 +45,27 @@ namespace ZMediaTask.Presentation.Presenters
             }
         }
 
-        public void SpawnPreview(ArmyPair armies)
+        public void SpawnPreview(BattleContext previewContext)
         {
             ClearUnits();
 
-            SpawnPreviewArmy(armies.Left, ArmySide.Left);
-            SpawnPreviewArmy(armies.Right, ArmySide.Right);
+            for (var i = 0; i < previewContext.Units.Count; i++)
+            {
+                var unit = previewContext.Units[i];
+                var prefab = GetPrefabForShape(unit.Shape);
+                if (prefab == null)
+                {
+                    continue;
+                }
+
+                var previewId = -(i + 1);
+                var position = new Vector3(unit.Movement.Position.X, 0.5f, unit.Movement.Position.Z);
+                var go = Instantiate(prefab, position, Quaternion.identity, _unitsParent);
+                go.name = $"Preview_{previewId}_{unit.Side}";
+
+                ApplyVisualStyle(go, unit.Side, unit.Size);
+                _unitObjects[previewId] = go;
+            }
         }
 
         public void SyncPositions(BattleContext context)
@@ -213,32 +225,6 @@ namespace ZMediaTask.Presentation.Presenters
                 if (list[i] == id) return true;
             }
             return false;
-        }
-
-        private void SpawnPreviewArmy(ZMediaTask.Domain.Army.Army army, ArmySide side)
-        {
-            var unitCount = army.Units.Count;
-            for (var i = 0; i < unitCount; i++)
-            {
-                var armyUnit = army.Units[i];
-                var prefab = GetPrefabForShape(armyUnit.Shape);
-                if (prefab == null)
-                {
-                    continue;
-                }
-
-                var x = side == ArmySide.Left ? -SpawnOffsetX : SpawnOffsetX;
-                var centerOffset = (unitCount - 1) * 0.5f;
-                var z = (i - centerOffset) * SpawnSpacingZ;
-                var position = new Vector3(x, 0.5f, z);
-
-                var previewId = -(side == ArmySide.Left ? i + 1 : unitCount + i + 1);
-                var go = Instantiate(prefab, position, Quaternion.identity, _unitsParent);
-                go.name = $"Preview_{previewId}_{side}";
-
-                ApplyVisualStyle(go, side, armyUnit.Size);
-                _unitObjects[previewId] = go;
-            }
         }
 
         private GameObject GetPrefabForShape(UnitShape shape)

@@ -86,7 +86,7 @@ namespace ZMediaTask.Tests.PlayMode
             StepProcessor = new AutoBattleStepProcessor(
                 MovementService, AttackService, OnUnitKilledUseCase, TestAttackConfig, TestMovementConfig);
 
-            ContextFactory = new BattleContextFactory();
+            ContextFactory = new BattleContextFactory(new LineFormationStrategy());
             BattleLoop = new BattleLoopService(
                 ContextFactory,
                 StepProcessor,
