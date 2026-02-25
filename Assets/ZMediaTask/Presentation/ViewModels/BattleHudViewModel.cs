@@ -11,10 +11,12 @@ namespace ZMediaTask.Presentation.ViewModels
         private readonly ReactiveProperty<int> _leftAlive = new(0);
         private readonly ReactiveProperty<int> _rightAlive = new(0);
         private readonly ReactiveProperty<string> _timerText = new("0:00");
+        private readonly ReactiveProperty<float> _balanceRatio = new(0.5f);
 
         public ReadOnlyReactiveProperty<int> LeftAlive => _leftAlive;
         public ReadOnlyReactiveProperty<int> RightAlive => _rightAlive;
         public ReadOnlyReactiveProperty<string> TimerText => _timerText;
+        public ReadOnlyReactiveProperty<float> BalanceRatio => _balanceRatio;
 
         public void UpdateFromContext(BattleContext context)
         {
@@ -42,6 +44,9 @@ namespace ZMediaTask.Presentation.ViewModels
             _leftAlive.Value = left;
             _rightAlive.Value = right;
 
+            var total = left + right;
+            _balanceRatio.Value = total > 0 ? (float)left / total : 0.5f;
+
             var elapsed = context.ElapsedTimeSec;
             var minutes = (int)(elapsed / 60f);
             var seconds = (int)(elapsed % 60f);
@@ -53,6 +58,7 @@ namespace ZMediaTask.Presentation.ViewModels
             _leftAlive.Dispose();
             _rightAlive.Dispose();
             _timerText.Dispose();
+            _balanceRatio.Dispose();
         }
     }
 }

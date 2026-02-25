@@ -95,6 +95,46 @@ namespace ZMediaTask.Tests.EditMode.Presentation
             vm.Dispose();
         }
 
+        [Test]
+        public void BattleHudViewModel_BalanceRatio_ComputesCorrectly()
+        {
+            var vm = new BattleHudViewModel();
+            var units = new[]
+            {
+                MakeUnit(1, ArmySide.Left, hp: 100),
+                MakeUnit(2, ArmySide.Left, hp: 100),
+                MakeUnit(3, ArmySide.Left, hp: 100),
+                MakeUnit(4, ArmySide.Right, hp: 100),
+            };
+            var context = new BattleContext(units, 0f, null, MakeDefaultWrathMeters());
+
+            vm.UpdateFromContext(context);
+
+            Assert.AreEqual(0.75f, vm.BalanceRatio.CurrentValue, 0.001f,
+                "3 left alive / (3 + 1) total = 0.75");
+
+            vm.Dispose();
+        }
+
+        [Test]
+        public void BattleHudViewModel_BalanceRatio_DefaultsToHalfWhenAllDead()
+        {
+            var vm = new BattleHudViewModel();
+            var units = new[]
+            {
+                MakeUnit(1, ArmySide.Left, hp: 0),
+                MakeUnit(2, ArmySide.Right, hp: 0),
+            };
+            var context = new BattleContext(units, 0f, null, MakeDefaultWrathMeters());
+
+            vm.UpdateFromContext(context);
+
+            Assert.AreEqual(0.5f, vm.BalanceRatio.CurrentValue, 0.001f,
+                "When all units dead, ratio should default to 0.5");
+
+            vm.Dispose();
+        }
+
         #endregion
 
         #region WrathViewModel

@@ -16,6 +16,9 @@ namespace ZMediaTask.Presentation.Presenters
         [SerializeField] private BattleLoopRunnerPresenter _battleRunner;
         [SerializeField] private BattleUnitsPresenter _unitsPresenter;
         [SerializeField] private BattleVfxPresenter _vfxPresenter;
+        [SerializeField] private Camera _mainCamera;
+        [SerializeField] private LayerMask _arenaLayer;
+        [SerializeField] private WrathTargetingPresenter _wrathTargeting;
 
         private readonly ReactiveProperty<GameFlowState> _currentState = new(GameFlowState.MainMenu);
         private readonly CompositeDisposable _disposables = new();
@@ -25,6 +28,8 @@ namespace ZMediaTask.Presentation.Presenters
         private BattleHudViewModel _battleHudVm;
         private WrathViewModel _wrathVm;
         private ResultViewModel _resultVm;
+
+        private WrathCardPresenter _wrathCardPresenter;
 
         private VisualElement _mainMenuRoot;
         private VisualElement _preparationRoot;
@@ -78,6 +83,7 @@ namespace ZMediaTask.Presentation.Presenters
 
         private void OnDestroy()
         {
+            _wrathCardPresenter?.Dispose();
             _disposables.Dispose();
             _mainMenuVm?.Dispose();
             _preparationVm?.Dispose();
@@ -147,7 +153,6 @@ namespace ZMediaTask.Presentation.Presenters
             var leftAliveLabel = root.Q<Label>("LeftAliveLabel");
             var rightAliveLabel = root.Q<Label>("RightAliveLabel");
             var timerLabel = root.Q<Label>("TimerLabel");
-            var wrathBar = root.Q<ProgressBar>("WrathProgressBar");
 
             if (leftAliveLabel != null)
             {
@@ -164,12 +169,15 @@ namespace ZMediaTask.Presentation.Presenters
                 _battleHudVm.TimerText.Subscribe(t => timerLabel.text = t).AddTo(_disposables);
             }
 
-            if (wrathBar != null)
+            _wrathCardPresenter = new WrathCardPresenter(
+                root, _wrathVm, _mainCamera, _arenaLayer, this, _wrathTargeting);
+
+            var bopLeftFill = root.Q<VisualElement>("BopLeftFill");
+            if (bopLeftFill != null)
             {
-                _wrathVm.ChargeNormalized.Subscribe(v =>
+                _battleHudVm.BalanceRatio.Subscribe(ratio =>
                 {
-                    wrathBar.value = v * 100f;
-                    wrathBar.title = _wrathVm.CanCast.CurrentValue ? "WRATH READY!" : $"{(int)(v * 100)}%";
+                    bopLeftFill.style.width = new StyleLength(new Length(ratio * 100f, LengthUnit.Percent));
                 }).AddTo(_disposables);
             }
         }
