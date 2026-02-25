@@ -1,0 +1,63 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/Common.uss" />
+    <Style src="../Styles/Preparation.uss" />
+    <Style src="../Styles/Battle.uss" />
+
+    <!-- Main Menu Screen -->
+    <ui:VisualElement name="MainMenuScreen" class="screen">
+        <ui:VisualElement class="panel">
+            <ui:Label text="Army Clash" class="screen-title" />
+            <ui:Label text="Z-media Battle Simulator" class="label-info" />
+            <ui:Button name="PlayButton" text="PLAY" class="btn-primary" style="margin-top: 24px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+
+    <!-- Preparation Screen -->
+    <ui:VisualElement name="PreparationScreen" class="screen" style="display: none;">
+        <ui:VisualElement class="panel preparation-container">
+            <ui:Label text="Preparation" class="screen-title" />
+
+            <ui:VisualElement class="army-preview-row">
+                <ui:VisualElement class="army-preview-panel">
+                    <ui:Label text="LEFT ARMY" class="army-label" />
+                    <ui:Label name="LeftArmyPreview" text="—" class="label-info" />
+                </ui:VisualElement>
+                <ui:Label text="VS" class="label-large" />
+                <ui:VisualElement class="army-preview-panel">
+                    <ui:Label text="RIGHT ARMY" class="army-label" />
+                    <ui:Label name="RightArmyPreview" text="—" class="label-info" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="randomize-row">
+                <ui:Button name="RandomizeLeftButton" text="Randomize Left" class="btn-secondary" />
+                <ui:Button name="RandomizeBothButton" text="Randomize Both" class="btn-primary" />
+                <ui:Button name="RandomizeRightButton" text="Randomize Right" class="btn-secondary" />
+            </ui:VisualElement>
+
+            <ui:Button name="StartBattleButton" text="START BATTLE" class="btn-primary" style="margin-top: 16px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+
+    <!-- Battle HUD Screen -->
+    <ui:VisualElement name="BattleHudScreen" class="battle-hud" style="display: none;">
+        <ui:VisualElement class="hud-top-bar">
+            <ui:Label name="LeftAliveLabel" text="20" class="alive-counter alive-left" />
+            <ui:Label name="TimerLabel" text="0:00" class="timer" />
+            <ui:Label name="RightAliveLabel" text="20" class="alive-counter alive-right" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="wrath-bar-container">
+            <ui:ProgressBar name="WrathProgressBar" title="0%" low-value="0" high-value="100" class="wrath-bar" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+
+    <!-- Result Screen -->
+    <ui:VisualElement name="ResultScreen" class="screen" style="display: none;">
+        <ui:VisualElement class="panel">
+            <ui:Label text="Battle Over" class="screen-title" />
+            <ui:Label name="WinnerLabel" text="" class="label-large" style="margin-bottom: 20px;" />
+            <ui:Button name="ReturnButton" text="RETURN TO MENU" class="btn-primary" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

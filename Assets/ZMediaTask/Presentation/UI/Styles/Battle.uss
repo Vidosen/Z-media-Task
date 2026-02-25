@@ -1,0 +1,53 @@
+.battle-hud {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.hud-top-bar {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.alive-counter {
+    font-size: 24px;
+    -unity-font-style: bold;
+}
+
+.alive-left {
+    color: rgb(100, 150, 255);
+}
+
+.alive-right {
+    color: rgb(255, 100, 100);
+}
+
+.timer {
+    font-size: 20px;
+    color: rgb(255, 255, 255);
+}
+
+.wrath-bar-container {
+    position: absolute;
+    bottom: 24px;
+    width: 80%;
+    align-self: center;
+}
+
+.wrath-bar {
+    height: 28px;
+}
+
+.wrath-bar .unity-progress-bar__background {
+    background-color: rgb(40, 40, 40);
+    border-radius: 4px;
+}
+
+.wrath-bar .unity-progress-bar__progress {
+    background-color: rgb(200, 160, 50);
+    border-radius: 4px;
+}

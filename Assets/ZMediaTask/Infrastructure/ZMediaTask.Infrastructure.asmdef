@@ -1,0 +1,17 @@
+{
+  "name": "ZMediaTask.Infrastructure",
+  "references": [
+    "ZMediaTask.Domain",
+    "ZMediaTask.Application",
+    "Reflex"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

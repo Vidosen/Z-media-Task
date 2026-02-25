@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b02b2937dac064441b5c1967b4f121c3, type: 3}
+  m_Name: UnitTraitCatalog
+  m_EditorClassIdentifier: ZMediaTask.Infrastructure::ZMediaTask.Infrastructure.Config.Traits.UnitTraitCatalogAsset
+  _shapeModifiers:
+  - Shape: 0
+    Modifier:
+      HP: 100
+      ATK: 10
+      SPEED: 0
+      ATKSPD: 0
+  - Shape: 1
+    Modifier:
+      HP: 50
+      ATK: 20
+      SPEED: 0
+      ATKSPD: 0
+  _sizeModifiers:
+  - Size: 0
+    Modifier:
+      HP: -50
+      ATK: 0
+      SPEED: 0
+      ATKSPD: 0
+  - Size: 1
+    Modifier:
+      HP: 50
+      ATK: 0
+      SPEED: 0
+      ATKSPD: 0
+  _colorModifiers:
+  - Color: 0
+    Modifier:
+      HP: 0
+      ATK: -15
+      SPEED: 10
+      ATKSPD: 4
+  - Color: 1
+    Modifier:
+      HP: -100
+      ATK: 20
+      SPEED: -5
+      ATKSPD: 0
+  - Color: 2
+    Modifier:
+      HP: 200
+      ATK: 40
+      SPEED: -9
+      ATKSPD: 0
