@@ -227,8 +227,7 @@ namespace ZMediaTask.Tests.EditMode.Application.Battle
             var slotAllocator = new RingSlotAllocator();
             var movementService = new MovementService(targetSelector, pathfinder, steeringService, slotAllocator);
             var healthService = new HealthService();
-            var cooldownTracker = new CooldownTracker();
-            var attackService = new AttackService(cooldownTracker, healthService);
+            var attackService = new AttackService(healthService);
             var wrathService = new WrathService(healthService);
             var onUnitKilled = new OnUnitKilledUseCase(ArmySide.Left, TestWrathConfig, wrathService);
             var knockbackService = new KnockbackService();

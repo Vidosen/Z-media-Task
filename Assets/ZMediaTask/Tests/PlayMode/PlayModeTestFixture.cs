@@ -69,7 +69,7 @@ namespace ZMediaTask.Tests.PlayMode
 
             HealthService = new HealthService();
             CooldownTracker = new CooldownTracker();
-            AttackService = new AttackService(CooldownTracker, HealthService);
+            AttackService = new AttackService(HealthService);
             WrathService = new WrathService(HealthService);
 
             TargetSelector = new NearestTargetSelector();

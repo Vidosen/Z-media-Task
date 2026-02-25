@@ -37,59 +37,35 @@ namespace ZMediaTask.Infrastructure.DI
             builder.RegisterValue(wrathConfig);
             builder.RegisterValue(knockbackConfig);
             builder.RegisterValue(arenaBounds);
+            builder.RegisterValue(_formationConfigAsset);
 
-            builder.RegisterFactory<IRandomProvider>(
-                _ => new SystemRandomProvider(), Lifetime.Singleton, Resolution.Lazy);
 
-            builder.RegisterFactory<IUnitTraitCatalog>(
-                _ => traitCatalog, Lifetime.Singleton, Resolution.Lazy);
-            builder.RegisterFactory<IUnitTraitWeightCatalog>(
-                _ => weightCatalog, Lifetime.Singleton, Resolution.Lazy);
+            builder.RegisterType(typeof(SystemRandomProvider),new[]{ typeof(IRandomProvider) }, Lifetime.Singleton, Resolution.Lazy);
 
-            builder.RegisterFactory<StatsCalculator>(
-                c => new StatsCalculator(c.Resolve<IUnitTraitCatalog>()),
-                Lifetime.Singleton, Resolution.Lazy);
-            builder.RegisterFactory<ArmyFactory>(
-                c => new ArmyFactory(c.Resolve<StatsCalculator>(), c.Resolve<IUnitTraitWeightCatalog>()),
-                Lifetime.Singleton, Resolution.Lazy);
-            builder.RegisterFactory<ArmyRandomizationUseCase>(
-                c => new ArmyRandomizationUseCase(c.Resolve<ArmyFactory>(), c.Resolve<IRandomProvider>()),
-                Lifetime.Singleton, Resolution.Lazy);
+            builder.RegisterValue(traitCatalog, new[]{ typeof(IUnitTraitCatalog) });
+            builder.RegisterValue(weightCatalog, new[]{ typeof(IUnitTraitWeightCatalog) });
+
+            builder.RegisterType(typeof(StatsCalculator), Lifetime.Singleton, Resolution.Lazy);
+            builder.RegisterType(typeof(ArmyFactory), Lifetime.Singleton, Resolution.Lazy);
+            builder.RegisterType(typeof(ArmyRandomizationUseCase), Lifetime.Singleton, Resolution.Lazy);
 
             builder.RegisterType(typeof(HealthService), Lifetime.Singleton, Resolution.Lazy);
-            builder.RegisterType(typeof(CooldownTracker), Lifetime.Singleton, Resolution.Lazy);
-            builder.RegisterFactory<AttackService>(
-                c => new AttackService(c.Resolve<CooldownTracker>(), c.Resolve<HealthService>()),
-                Lifetime.Singleton, Resolution.Lazy);
-            builder.RegisterFactory<WrathService>(
-                c => new WrathService(c.Resolve<HealthService>()),
-                Lifetime.Singleton, Resolution.Lazy);
-
+            builder.RegisterType(typeof(AttackService), Lifetime.Singleton, Resolution.Lazy);
+            builder.RegisterType(typeof(WrathService), Lifetime.Singleton, Resolution.Lazy);
             builder.RegisterType(typeof(NearestTargetSelector),
                 new[] { typeof(ITargetSelector) }, Lifetime.Singleton, Resolution.Lazy);
             builder.RegisterType(typeof(DirectPathfinder),
                 new[] { typeof(IPathfinder) }, Lifetime.Singleton, Resolution.Lazy);
-            builder.RegisterFactory<ISteeringService>(
-                _ => new SpatialHashSteeringService(),
-                Lifetime.Singleton, Resolution.Lazy);
+            builder.RegisterType(typeof(SpatialHashSteeringService),new[]{ typeof(ISteeringService) }, Lifetime.Singleton, Resolution.Lazy);
             builder.RegisterType(typeof(RingSlotAllocator),
                 new[] { typeof(ISlotAllocator) }, Lifetime.Singleton, Resolution.Lazy);
-            builder.RegisterFactory<MovementService>(
-                c => new MovementService(
-                    c.Resolve<ITargetSelector>(),
-                    c.Resolve<IPathfinder>(),
-                    c.Resolve<ISteeringService>(),
-                    c.Resolve<ISlotAllocator>()),
-                Lifetime.Singleton, Resolution.Lazy);
+            builder.RegisterType(typeof(MovementService), Lifetime.Singleton, Resolution.Lazy);
 
-            builder.RegisterFactory<IWrathTargetValidator>(
-                _ => new ArenaBoundsWrathTargetValidator(arenaBounds),
-                Lifetime.Singleton, Resolution.Lazy);
-            builder.RegisterFactory<OnUnitKilledUseCase>(
+            builder.RegisterType(typeof(ArenaBoundsWrathTargetValidator),new[]{ typeof(IWrathTargetValidator) }, Lifetime.Singleton, Resolution.Lazy);
+            builder.RegisterFactory(
                 c => new OnUnitKilledUseCase(ArmySide.Left, wrathConfig, c.Resolve<WrathService>()),
                 Lifetime.Singleton, Resolution.Lazy);
-            builder.RegisterFactory<TryCastWrathUseCase>(
-                c => new TryCastWrathUseCase(
+            builder.RegisterFactory(c => new TryCastWrathUseCase(
                     ArmySide.Left, wrathConfig, c.Resolve<WrathService>(),
                     c.Resolve<IWrathTargetValidator>()),
                 Lifetime.Singleton, Resolution.Lazy);
@@ -98,35 +74,15 @@ namespace ZMediaTask.Infrastructure.DI
 
             builder.RegisterType(typeof(KnockbackService), Lifetime.Singleton, Resolution.Lazy);
 
-            builder.RegisterFactory<IBattleStepProcessor>(
-                c => new AutoBattleStepProcessor(
-                    c.Resolve<MovementService>(),
-                    c.Resolve<AttackService>(),
-                    c.Resolve<OnUnitKilledUseCase>(),
-                    attackConfig,
-                    movementConfig,
-                    c.Resolve<KnockbackService>(),
-                    knockbackConfig),
+            builder.RegisterType(typeof(AutoBattleStepProcessor),new[]{ typeof(IBattleStepProcessor) }, Lifetime.Singleton, Resolution.Lazy);
+            
+            builder.RegisterFactory(c =>
+                {
+                    var formationConfig = c.Resolve<FormationConfigAsset>();
+                    return new BattleContextFactory(formationConfig.BuildFormationStrategy(), formationConfig.SpawnOffsetX);
+                },
                 Lifetime.Singleton, Resolution.Lazy);
-
-            var formationStrategy = _formationConfigAsset != null
-                ? _formationConfigAsset.BuildFormationStrategy()
-                : new LineFormationStrategy();
-            var spawnOffsetX = _formationConfigAsset != null
-                ? _formationConfigAsset.SpawnOffsetX
-                : 8f;
-
-            builder.RegisterFactory<BattleContextFactory>(
-                _ => new BattleContextFactory(formationStrategy, spawnOffsetX),
-                Lifetime.Singleton, Resolution.Lazy);
-            builder.RegisterFactory<BattleLoopService>(
-                c => new BattleLoopService(
-                    c.Resolve<BattleContextFactory>(),
-                    c.Resolve<IBattleStepProcessor>(),
-                    c.Resolve<IUnitQueryInRadius>(),
-                    c.Resolve<WrathService>(),
-                    wrathConfig),
-                Lifetime.Singleton, Resolution.Lazy);
+            builder.RegisterType(typeof(BattleLoopService), Lifetime.Singleton, Resolution.Lazy);
         }
     }
 }

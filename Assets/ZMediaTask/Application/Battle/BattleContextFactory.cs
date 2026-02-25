@@ -2,7 +2,6 @@ using System;
 using ZMediaTask.Application.Army;
 using ZMediaTask.Domain.Army;
 using ZMediaTask.Domain.Combat;
-using ZMediaTask.Domain.Traits;
 
 namespace ZMediaTask.Application.Battle
 {

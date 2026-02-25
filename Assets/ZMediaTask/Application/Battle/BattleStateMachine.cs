@@ -2,14 +2,9 @@ namespace ZMediaTask.Application.Battle
 {
     public sealed class BattleStateMachine
     {
-        private readonly GenericStateMachine<BattlePhase> _stateMachine;
-
-        public BattleStateMachine()
-        {
-            _stateMachine = new GenericStateMachine<BattlePhase>(
-                BattlePhase.Preparation,
-                IsValidTransition);
-        }
+        private readonly GenericStateMachine<BattlePhase> _stateMachine = new(
+            BattlePhase.Preparation,
+            IsValidTransition);
 
         public BattlePhase Current => _stateMachine.Current;
 

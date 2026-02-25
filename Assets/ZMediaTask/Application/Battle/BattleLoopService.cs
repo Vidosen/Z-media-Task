@@ -96,9 +96,7 @@ namespace ZMediaTask.Application.Battle
         public void Tick(float deltaTimeSec, float currentTimeSec)
         {
             if (deltaTimeSec < 0f)
-            {
                 throw new ArgumentOutOfRangeException(nameof(deltaTimeSec), "Delta time must be >= 0.");
-            }
 
             _lastTickEvents.Clear();
             if (StateMachine.Current != BattlePhase.Running)
@@ -114,10 +112,8 @@ namespace ZMediaTask.Application.Battle
 
             var next = _stepProcessor.Step(new BattleStepInput(_context, deltaTimeSec, currentTimeSec));
 
-            if (_stepProcessor is AutoBattleStepProcessor auto)
-            {
+            if (_stepProcessor is AutoBattleStepProcessor auto) 
                 _lastTickEvents.AddRange(auto.LastStepEvents);
-            }
 
             var unitsAfterStep = CopyUnits(next.Units);
             ApplyDueWrathImpacts(unitsAfterStep, currentTimeSec);
@@ -125,10 +121,8 @@ namespace ZMediaTask.Application.Battle
 
             _context = new BattleContext(unitsAfterStep, next.ElapsedTimeSec, winner, next.WrathMeters);
 
-            if (winner.HasValue || IsDraw(unitsAfterStep))
-            {
+            if (winner.HasValue || IsDraw(unitsAfterStep)) 
                 StateMachine.Finish();
-            }
         }
 
         public void SetWrathMeter(ArmySide side, WrathMeter meter)
@@ -157,15 +151,11 @@ namespace ZMediaTask.Application.Battle
 
         private void EnsurePreparationState()
         {
-            if (StateMachine.Current == BattlePhase.Running)
-            {
+            if (StateMachine.Current == BattlePhase.Running) 
                 StateMachine.Finish();
-            }
 
-            if (StateMachine.Current == BattlePhase.Finished)
-            {
+            if (StateMachine.Current == BattlePhase.Finished) 
                 StateMachine.Reset();
-            }
         }
 
         private void ApplyDueWrathImpacts(BattleUnitRuntime[] units, float currentTimeSec)
@@ -237,8 +227,8 @@ namespace ZMediaTask.Application.Battle
         {
             return new Dictionary<ArmySide, WrathMeter>
             {
-                [ArmySide.Left] = new WrathMeter(0, _wrathConfig.MaxCharge),
-                [ArmySide.Right] = new WrathMeter(0, _wrathConfig.MaxCharge)
+                [ArmySide.Left] = new(0, _wrathConfig.MaxCharge),
+                [ArmySide.Right] = new(0, _wrathConfig.MaxCharge)
             };
         }
 
@@ -273,29 +263,19 @@ namespace ZMediaTask.Application.Battle
             for (var i = 0; i < units.Count; i++)
             {
                 if (!units[i].Combat.IsAlive)
-                {
                     continue;
-                }
 
                 if (units[i].Side == ArmySide.Left)
-                {
                     hasLeftAlive = true;
-                }
                 else
-                {
                     hasRightAlive = true;
-                }
 
                 if (hasLeftAlive && hasRightAlive)
-                {
                     return null;
-                }
             }
 
             if (hasLeftAlive)
-            {
                 return ArmySide.Left;
-            }
 
             return hasRightAlive ? ArmySide.Right : null;
         }
@@ -305,9 +285,7 @@ namespace ZMediaTask.Application.Battle
             for (var i = 0; i < units.Count; i++)
             {
                 if (units[i].Combat.IsAlive)
-                {
                     return false;
-                }
             }
 
             return true;

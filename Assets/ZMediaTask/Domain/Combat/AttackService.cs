@@ -4,12 +4,10 @@ namespace ZMediaTask.Domain.Combat
 {
     public sealed class AttackService
     {
-        private readonly CooldownTracker _cooldownTracker;
         private readonly HealthService _healthService;
 
-        public AttackService(CooldownTracker cooldownTracker, HealthService healthService)
+        public AttackService(HealthService healthService)
         {
-            _cooldownTracker = cooldownTracker ?? throw new ArgumentNullException(nameof(cooldownTracker));
             _healthService = healthService ?? throw new ArgumentNullException(nameof(healthService));
         }
 
@@ -26,7 +24,7 @@ namespace ZMediaTask.Domain.Combat
             if (failure.HasValue) return new AttackResult(failure, attacker, target, 0);
 
             var damageResult = _healthService.ApplyDamage(target, attacker.Attack);
-            var nextAttackTime = _cooldownTracker.ComputeNextAttackTime(
+            var nextAttackTime = CooldownTracker.ComputeNextAttackTime(
                 currentTimeSec,
                 attacker.AttackSpeed,
                 config.BaseAttackDelay);
@@ -48,7 +46,7 @@ namespace ZMediaTask.Domain.Combat
 
             if (!IsInRange(attacker, target, config.AttackRange)) return AttackFailureReason.OutOfRange;
 
-            if (!_cooldownTracker.IsReady(currentTimeSec, attacker.NextAttackTimeSec))
+            if (!CooldownTracker.IsReady(currentTimeSec, attacker.NextAttackTimeSec))
                 return AttackFailureReason.CooldownNotReady;
 
             return null;

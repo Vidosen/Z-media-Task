@@ -129,7 +129,7 @@ namespace ZMediaTask.Tests.EditMode.Domain.Combat
         {
             var tracker = new CooldownTracker();
 
-            var nextTime = tracker.ComputeNextAttackTime(1.5f, attackSpeed: 4, baseAttackDelay: 0.75f);
+            var nextTime = CooldownTracker.ComputeNextAttackTime(1.5f, attackSpeed: 4, baseAttackDelay: 0.75f);
 
             Assert.AreEqual(4.5f, nextTime, 0.0001f);
         }
@@ -158,7 +158,7 @@ namespace ZMediaTask.Tests.EditMode.Domain.Combat
 
         private static AttackService CreateAttackService()
         {
-            return new AttackService(new CooldownTracker(), new HealthService());
+            return new AttackService(new HealthService());
         }
 
         private static CombatUnitState Unit(
