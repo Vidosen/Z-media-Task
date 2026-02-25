@@ -8,18 +8,39 @@ namespace ZMediaTask.Application.Battle
 {
     public sealed class BattleContextFactory
     {
-        private IFormationStrategy _formationStrategy;
+        private IFormationStrategy _leftFormationStrategy;
+        private IFormationStrategy _rightFormationStrategy;
         private readonly float _spawnOffsetX;
 
         public BattleContextFactory(IFormationStrategy formationStrategy, float spawnOffsetX = 8f)
+            : this(formationStrategy, formationStrategy, spawnOffsetX)
         {
-            _formationStrategy = formationStrategy ?? throw new ArgumentNullException(nameof(formationStrategy));
-            _spawnOffsetX = spawnOffsetX;
         }
 
-        public void SetFormationStrategy(IFormationStrategy strategy)
+        public BattleContextFactory(
+            IFormationStrategy leftFormationStrategy,
+            IFormationStrategy rightFormationStrategy,
+            float spawnOffsetX = 8f)
         {
-            _formationStrategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
+            _leftFormationStrategy = leftFormationStrategy
+                ?? throw new ArgumentNullException(nameof(leftFormationStrategy));
+            _rightFormationStrategy = rightFormationStrategy
+                ?? throw new ArgumentNullException(nameof(rightFormationStrategy));
+            _spawnOffsetX = spawnOffsetX;
+        }
+        
+        public void SetFormationStrategy(ArmySide side, IFormationStrategy strategy)
+        {
+            if (strategy == null)
+                throw new ArgumentNullException(nameof(strategy));
+
+            if (side == ArmySide.Left)
+            {
+                _leftFormationStrategy = strategy;
+                return;
+            }
+
+            _rightFormationStrategy = strategy;
         }
 
         public BattleContext Create(ArmyPair armies)
@@ -43,6 +64,7 @@ namespace ZMediaTask.Application.Battle
         {
             var index = startIndex;
             var unitCount = army.Units.Count;
+            var formationStrategy = GetFormationStrategy(army.Side);
             for (var i = 0; i < unitCount; i++)
             {
                 var armyUnit = army.Units[i];
@@ -52,7 +74,7 @@ namespace ZMediaTask.Application.Battle
                 var speed = Math.Max(0, stats.SPEED);
                 var attack = Math.Max(0, stats.ATK);
                 var attackSpeed = Math.Max(0, stats.ATKSPD);
-                var spawnPosition = _formationStrategy.ComputePosition(army.Side, i, unitCount, _spawnOffsetX);
+                var spawnPosition = formationStrategy.ComputePosition(army.Side, i, unitCount, _spawnOffsetX);
 
                 var movement = new MovementAgentState(
                     unitId,
@@ -75,6 +97,11 @@ namespace ZMediaTask.Application.Battle
             }
 
             return index;
+        }
+
+        private IFormationStrategy GetFormationStrategy(ArmySide side)
+        {
+            return side == ArmySide.Left ? _leftFormationStrategy : _rightFormationStrategy;
         }
     }
 }

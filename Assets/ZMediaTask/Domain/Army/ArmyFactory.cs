@@ -24,14 +24,10 @@ namespace ZMediaTask.Domain.Army
         public Army Create(ArmySide side, int unitCount, StatBlock baseStats, IRandomProvider randomProvider)
         {
             if (unitCount < 0)
-            {
                 throw new ArgumentOutOfRangeException(nameof(unitCount), "Unit count must be >= 0.");
-            }
 
             if (randomProvider == null)
-            {
                 throw new ArgumentNullException(nameof(randomProvider));
-            }
 
             var units = new List<ArmyUnit>(unitCount);
             for (var index = 0; index < unitCount; index++)
@@ -84,7 +80,7 @@ namespace ZMediaTask.Domain.Army
                 }
             }
 
-            return values[values.Count - 1];
+            return values[^1];
         }
     }
 }

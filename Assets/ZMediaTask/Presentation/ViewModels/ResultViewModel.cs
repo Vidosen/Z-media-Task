@@ -15,7 +15,7 @@ namespace ZMediaTask.Presentation.ViewModels
         public void SetWinner(ArmySide? winner)
         {
             _winnerText.Value = winner.HasValue
-                ? $"{winner.Value} army wins!"
+                ? $"{GetSideLabel(winner.Value)} army wins!"
                 : "Draw!";
         }
 
@@ -28,6 +28,11 @@ namespace ZMediaTask.Presentation.ViewModels
         {
             _winnerText.Dispose();
             _returnRequested.Dispose();
+        }
+
+        private static string GetSideLabel(ArmySide side)
+        {
+            return side == ArmySide.Left ? "Blue" : "Red";
         }
     }
 }

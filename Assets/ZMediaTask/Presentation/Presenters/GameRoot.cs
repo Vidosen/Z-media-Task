@@ -8,7 +8,6 @@ namespace ZMediaTask.Presentation.Presenters
     public sealed class GameRoot : MonoBehaviour
     {
         [SerializeField] private ScreenFlowPresenter _screenFlow;
-        [SerializeField] private BattleLoopRunnerPresenter _battleRunner;
         [SerializeField] private BattleVfxPresenter _vfxPresenter;
 
         [Inject] private ArmyRandomizationUseCase _randomizationUseCase;
@@ -23,8 +22,6 @@ namespace ZMediaTask.Presentation.Presenters
                 _battleLoopService,
                 _battleContextFactory,
                 _tryCastWrathUseCase);
-
-            _battleRunner.Construct(_battleLoopService);
 
             if (_vfxPresenter != null)
             {

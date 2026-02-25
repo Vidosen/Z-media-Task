@@ -151,6 +151,21 @@ namespace ZMediaTask.Tests.EditMode.Application.Battle
             Assert.AreEqual(context.Units[0].Movement.IsAlive, next.Units[0].Movement.IsAlive);
         }
 
+        [Test]
+        public void BattleContextFactory_SetFormationStrategyForSingleSide_DoesNotAffectOtherSide()
+        {
+            var factory = new BattleContextFactory(
+                new FixedZFormationStrategy(10f),
+                new FixedZFormationStrategy(20f));
+            var armies = CreateArmies(leftHp: 100, rightHp: 100);
+
+            factory.SetFormationStrategy(ArmySide.Left, new FixedZFormationStrategy(30f));
+            var context = factory.Create(armies);
+
+            Assert.AreEqual(30f, context.Units[0].Movement.Position.Z, 0.0001f);
+            Assert.AreEqual(20f, context.Units[1].Movement.Position.Z, 0.0001f);
+        }
+        
         private static BattleLoopService CreateLoop(IBattleStepProcessor processor)
         {
             return new BattleLoopService(new BattleContextFactory(new LineFormationStrategy()), processor);
@@ -228,6 +243,22 @@ namespace ZMediaTask.Tests.EditMode.Application.Battle
                     units,
                     input.Context.ElapsedTimeSec + input.DeltaTimeSec,
                     input.Context.WinnerSide);
+            }
+        }
+
+        private sealed class FixedZFormationStrategy : IFormationStrategy
+        {
+            private readonly float _z;
+
+            public FixedZFormationStrategy(float z)
+            {
+                _z = z;
+            }
+
+            public BattlePoint ComputePosition(ArmySide side, int index, int totalUnits, float spawnOffsetX)
+            {
+                var x = side == ArmySide.Left ? -spawnOffsetX : spawnOffsetX;
+                return new BattlePoint(x, _z + index);
             }
         }
     }

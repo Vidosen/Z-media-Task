@@ -40,28 +40,10 @@
 ### Unity Editor
 - Open in Unity Hub:
   `open -a "Unity Hub" .`
-- Unity CLI binary:
-  `UNITY_BIN="/Applications/Unity/Hub/Editor/6000.3.6f1/Unity.app/Contents/MacOS/Unity"`
-- Quick headless compile check:
-  `"$UNITY_BIN" -batchmode -projectPath "$PWD" -quit -logFile Logs/compile-check.log`
 
 ### Unity Test Runs (preferred)
-- EditMode:
-  `"$UNITY_BIN" -batchmode -projectPath "$PWD" -runTests -testPlatform EditMode -testResults Logs/editmode-results.xml -logFile Logs/editmode.log -quit`
-- PlayMode:
-  `"$UNITY_BIN" -batchmode -projectPath "$PWD" -runTests -testPlatform PlayMode -testResults Logs/playmode-results.xml -logFile Logs/playmode.log -quit`
-- Filtered test run:
-  `"$UNITY_BIN" -batchmode -projectPath "$PWD" -runTests -testPlatform EditMode -testFilter "ZMediaTask.Tests.EditMode" -testResults Logs/editmode-filtered.xml -logFile Logs/editmode-filtered.log -quit`
-
-### Dotnet (optional local checks)
-- Solution build:
-  `dotnet build "Z-media Task.sln"`
-- EditMode test assembly:
-  `dotnet test ZMediaTask.Tests.EditMode.csproj`
-- PlayMode test assembly:
-  `dotnet test ZMediaTask.Tests.PlayMode.csproj`
-
-If `dotnet test` fails in restricted/sandboxed environments with pipe/socket permission errors, use Unity CLI test commands above.
+- Preferred path: run EditMode/PlayMode tests through Unity MCP when available.
+- If Unity MCP is not available, ask the user to connect/enable Unity MCP first and proceed after connection.
 
 ### Logs and Diagnostics
 - Find compile/runtime errors in logs:

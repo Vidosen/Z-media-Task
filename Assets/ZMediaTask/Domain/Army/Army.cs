@@ -6,8 +6,6 @@ namespace ZMediaTask.Domain.Army
 {
     public sealed class Army
     {
-        private readonly IReadOnlyList<ArmyUnit> _units;
-
         public Army(ArmySide side, IReadOnlyList<ArmyUnit> units)
         {
             if (units == null)
@@ -16,11 +14,11 @@ namespace ZMediaTask.Domain.Army
             }
 
             Side = side;
-            _units = units.ToArray();
+            Units = units.ToArray();
         }
 
         public ArmySide Side { get; }
 
-        public IReadOnlyList<ArmyUnit> Units => _units;
+        public IReadOnlyList<ArmyUnit> Units { get; }
     }
 }

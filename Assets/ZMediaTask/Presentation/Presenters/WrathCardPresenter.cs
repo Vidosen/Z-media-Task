@@ -19,7 +19,7 @@ namespace ZMediaTask.Presentation.Presenters
         private readonly WrathViewModel _wrathVm;
         private readonly Camera _camera;
         private readonly LayerMask _arenaLayer;
-        private readonly ScreenFlowPresenter _screenFlow;
+        private readonly Action<BattlePoint> _onCastWrath;
         private readonly WrathTargetingPresenter _targeting;
 
         private readonly VisualElement _card;
@@ -42,13 +42,13 @@ namespace ZMediaTask.Presentation.Presenters
             WrathViewModel wrathVm,
             Camera camera,
             LayerMask arenaLayer,
-            ScreenFlowPresenter screenFlow,
+            Action<BattlePoint> onCastWrath,
             WrathTargetingPresenter targeting)
         {
             _wrathVm = wrathVm;
             _camera = camera;
             _arenaLayer = arenaLayer;
-            _screenFlow = screenFlow;
+            _onCastWrath = onCastWrath;
             _targeting = targeting;
 
             _card = hudRoot.Q<VisualElement>("WrathCard");
@@ -157,7 +157,7 @@ namespace ZMediaTask.Presentation.Presenters
             {
                 if (TryGetArenaPoint(evt.position, out var point))
                 {
-                    _screenFlow.TryCastWrath(point);
+                    _onCastWrath?.Invoke(point);
                 }
 
                 PlayCastAnimation();

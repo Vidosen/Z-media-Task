@@ -5,90 +5,92 @@
     <Style src="../Styles/WrathCard.uss" />
     <Style src="../Styles/Result.uss" />
 
-    <!-- Main Menu Screen -->
-    <ui:VisualElement name="MainMenuScreen" class="screen">
-        <ui:VisualElement class="screen-bg-overlay" />
-        <ui:VisualElement class="card-ornate">
-            <ui:VisualElement class="ornate-header">
-                <ui:Label text="Army Clash" class="title-gold" />
-            </ui:VisualElement>
-            <ui:VisualElement class="divider-ornate" />
-            <ui:Label text="Z-media Battle Simulator" class="label-info" />
-            <ui:Button name="PlayButton" text="PLAY" class="btn-rpg" style="margin-top: 24px;" />
-        </ui:VisualElement>
-    </ui:VisualElement>
-
-    <!-- Preparation Screen -->
-    <ui:VisualElement name="PreparationScreen" class="screen" style="display: none;">
-        <ui:VisualElement class="screen-bg-overlay" />
-        <ui:VisualElement class="card-ornate preparation-container">
-            <ui:VisualElement class="ornate-header">
-                <ui:Label text="Preparation" class="title-gold" />
-            </ui:VisualElement>
-            <ui:VisualElement class="divider-ornate" />
-
-            <ui:VisualElement class="army-preview-row">
-                <ui:VisualElement class="army-preview-panel faction-card faction-blue">
-                    <ui:Label text="LEFT ARMY" class="army-label label-faction-blue" />
-                    <ui:Label name="LeftArmyPreview" text="—" class="label-info" />
+    <ui:VisualElement name="SafeAreaRoot" class="safe-area-root">
+        <!-- Main Menu Screen -->
+        <ui:VisualElement name="MainMenuScreen" class="screen">
+            <ui:VisualElement class="screen-bg-overlay" />
+            <ui:VisualElement class="card-ornate">
+                <ui:VisualElement class="ornate-header">
+                    <ui:Label text="Army Clash" class="title-gold" />
                 </ui:VisualElement>
-                <ui:Label text="VS" class="label-large label-vs" />
-                <ui:VisualElement class="army-preview-panel faction-card faction-red">
-                    <ui:Label text="RIGHT ARMY" class="army-label label-faction-red" />
-                    <ui:Label name="RightArmyPreview" text="—" class="label-info" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-
-            <ui:VisualElement class="randomize-row">
-                <ui:Button name="RandomizeLeftButton" text="Randomize Left" class="btn-rpg btn-secondary" />
-                <ui:Button name="RandomizeBothButton" text="Randomize Both" class="btn-rpg" />
-                <ui:Button name="RandomizeRightButton" text="Randomize Right" class="btn-rpg btn-secondary" />
-            </ui:VisualElement>
-
-            <ui:Button name="StartBattleButton" text="START BATTLE" class="btn-start" style="margin-top: 16px;" />
-        </ui:VisualElement>
-    </ui:VisualElement>
-
-    <!-- Battle HUD Screen -->
-    <ui:VisualElement name="BattleHudScreen" class="battle-hud" style="display: none;">
-        <ui:VisualElement class="bop-container">
-            <ui:VisualElement class="bop-bar-frame">
-                <ui:VisualElement class="bop-bar-track">
-                    <ui:VisualElement name="BopLeftFill" class="bop-fill bop-fill-left" style="width: 50%;" />
-                    <ui:VisualElement name="BopRightFill" class="bop-fill bop-fill-right" />
-                </ui:VisualElement>
-                <ui:VisualElement class="bop-labels-overlay">
-                    <ui:Label name="LeftAliveLabel" text="20" class="bop-count bop-count-left" />
-                    <ui:Label name="TimerLabel" text="0:00" class="bop-timer" />
-                    <ui:Label name="RightAliveLabel" text="20" class="bop-count bop-count-right" />
-                </ui:VisualElement>
+                <ui:VisualElement class="divider-ornate" />
+                <ui:Label text="Z-media Battle Simulator" class="label-info" />
+                <ui:Button name="PlayButton" text="PLAY" class="btn-rpg" style="margin-top: 24px;" />
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- Wrath Card Deck -->
-        <ui:VisualElement name="WrathDeckContainer" class="wrath-deck-container">
-            <ui:VisualElement name="WrathCard" class="wrath-card">
-                <ui:VisualElement class="wrath-card-art">
-                    <ui:VisualElement name="WrathCardFill" class="wrath-card-fill" />
-                    <ui:VisualElement name="WrathCardGlow" class="wrath-card-glow" />
-                    <ui:Label text="GOD'S WRATH" class="wrath-card-title" />
-                    <ui:VisualElement class="wrath-card-icon" />
-                    <ui:Label name="WrathCardLabel" text="0%" class="wrath-card-charge-label" />
+        <!-- Preparation Screen -->
+        <ui:VisualElement name="PreparationScreen" class="screen" style="display: none;">
+            <ui:VisualElement class="screen-bg-overlay" />
+            <ui:VisualElement class="card-ornate preparation-container">
+                <ui:VisualElement class="ornate-header">
+                    <ui:Label text="Preparation" class="title-gold" />
+                </ui:VisualElement>
+                <ui:VisualElement class="divider-ornate" />
+
+                <ui:VisualElement class="army-preview-row">
+                    <ui:VisualElement class="army-preview-panel faction-card faction-blue">
+                        <ui:Label text="BLUE ARMY" class="army-label label-faction-blue" />
+                        <ui:Label name="LeftArmyPreview" text="—" class="label-info" />
+                    </ui:VisualElement>
+                    <ui:Label text="VS" class="label-large label-vs" />
+                    <ui:VisualElement class="army-preview-panel faction-card faction-red">
+                        <ui:Label text="RED ARMY" class="army-label label-faction-red" />
+                        <ui:Label name="RightArmyPreview" text="—" class="label-info" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="randomize-row">
+                    <ui:Button name="RandomizeLeftButton" text="Randomize Blue" class="btn-rpg btn-secondary" />
+                    <ui:Button name="RandomizeBothButton" text="Randomize Both" class="btn-rpg" />
+                    <ui:Button name="RandomizeRightButton" text="Randomize Red" class="btn-rpg btn-secondary" />
+                </ui:VisualElement>
+
+                <ui:Button name="StartBattleButton" text="START BATTLE" class="btn-start" style="margin-top: 16px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Battle HUD Screen -->
+        <ui:VisualElement name="BattleHudScreen" class="battle-hud" style="display: none;">
+            <ui:VisualElement class="bop-container">
+                <ui:VisualElement class="bop-bar-frame">
+                    <ui:VisualElement class="bop-bar-track">
+                        <ui:VisualElement name="BopLeftFill" class="bop-fill bop-fill-left" style="width: 50%;" />
+                        <ui:VisualElement name="BopRightFill" class="bop-fill bop-fill-right" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="bop-labels-overlay">
+                        <ui:Label name="LeftAliveLabel" text="20" class="bop-count bop-count-left" />
+                        <ui:Label name="TimerLabel" text="0:00" class="bop-timer" />
+                        <ui:Label name="RightAliveLabel" text="20" class="bop-count bop-count-right" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- Wrath Card Deck -->
+            <ui:VisualElement name="WrathDeckContainer" class="wrath-deck-container">
+                <ui:VisualElement name="WrathCard" class="wrath-card">
+                    <ui:VisualElement class="wrath-card-art">
+                        <ui:VisualElement name="WrathCardFill" class="wrath-card-fill" />
+                        <ui:VisualElement name="WrathCardGlow" class="wrath-card-glow" />
+                        <ui:Label text="GOD'S WRATH" class="wrath-card-title" />
+                        <ui:VisualElement class="wrath-card-icon" />
+                        <ui:Label name="WrathCardLabel" text="0%" class="wrath-card-charge-label" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-    </ui:VisualElement>
 
-    <!-- Result Screen -->
-    <ui:VisualElement name="ResultScreen" class="screen" style="display: none;">
-        <ui:VisualElement class="screen-bg-overlay" />
-        <ui:VisualElement class="card-ornate">
-            <ui:VisualElement class="ornate-header">
-                <ui:Label text="Battle Over" class="title-gold" />
+        <!-- Result Screen -->
+        <ui:VisualElement name="ResultScreen" class="screen" style="display: none;">
+            <ui:VisualElement class="screen-bg-overlay" />
+            <ui:VisualElement class="card-ornate">
+                <ui:VisualElement class="ornate-header">
+                    <ui:Label text="Battle Over" class="title-gold" />
+                </ui:VisualElement>
+                <ui:VisualElement class="divider-ornate" />
+                <ui:Label name="WinnerLabel" text="" class="label-winner" style="margin-bottom: 20px;" />
+                <ui:Button name="ReturnButton" text="RETURN TO MENU" class="btn-start" />
             </ui:VisualElement>
-            <ui:VisualElement class="divider-ornate" />
-            <ui:Label name="WinnerLabel" text="" class="label-winner" style="margin-bottom: 20px;" />
-            <ui:Button name="ReturnButton" text="RETURN TO MENU" class="btn-start" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

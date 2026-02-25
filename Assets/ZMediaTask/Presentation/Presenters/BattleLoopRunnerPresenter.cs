@@ -6,18 +6,19 @@ namespace ZMediaTask.Presentation.Presenters
 {
     public sealed class BattleLoopRunnerPresenter : MonoBehaviour
     {
-        [SerializeField] private ScreenFlowPresenter _screenFlow;
         [SerializeField] private CombatGameplayConfigAsset _combatConfig;
 
         private BattleLoopService _battleLoopService;
+        private BattleSessionController _battleSession;
         private float _tickInterval;
         private float _accumulator;
         private float _elapsedTime;
         private bool _isRunning;
 
-        public void Construct(BattleLoopService battleLoopService)
+        public void Construct(BattleLoopService battleLoopService, BattleSessionController battleSession)
         {
             _battleLoopService = battleLoopService;
+            _battleSession = battleSession;
             _tickInterval = _combatConfig != null ? _combatConfig.FixedTickInterval : 0.02f;
         }
 
@@ -47,7 +48,12 @@ namespace ZMediaTask.Presentation.Presenters
                 _accumulator -= _tickInterval;
                 _elapsedTime += _tickInterval;
                 _battleLoopService.Tick(_tickInterval, _elapsedTime);
-                _screenFlow.OnBattleTick();
+
+                if (_battleSession.ProcessTick())
+                {
+                    StopRunning();
+                    break;
+                }
 
                 if (!_isRunning)
                 {

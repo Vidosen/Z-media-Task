@@ -25,6 +25,7 @@ namespace ZMediaTask.Tests.EditMode.Presentation
 
             Assert.AreNotEqual("—", vm.LeftPreview.CurrentValue,
                 "Left preview should be updated after randomize.");
+            StringAssert.Contains("(Blue)", vm.LeftPreview.CurrentValue);
         }
 
         [Test]
@@ -36,6 +37,8 @@ namespace ZMediaTask.Tests.EditMode.Presentation
 
             Assert.AreNotEqual("—", vm.LeftPreview.CurrentValue);
             Assert.AreNotEqual("—", vm.RightPreview.CurrentValue);
+            StringAssert.Contains("(Blue)", vm.LeftPreview.CurrentValue);
+            StringAssert.Contains("(Red)", vm.RightPreview.CurrentValue);
         }
 
         [Test]
@@ -184,7 +187,7 @@ namespace ZMediaTask.Tests.EditMode.Presentation
             using var sub = vm.ReturnRequested.Subscribe(_ => returnCalled = true);
 
             vm.SetWinner(ArmySide.Left);
-            Assert.AreEqual("Left army wins!", vm.WinnerText.CurrentValue);
+            Assert.AreEqual("Blue army wins!", vm.WinnerText.CurrentValue);
 
             vm.SetWinner(null);
             Assert.AreEqual("Draw!", vm.WinnerText.CurrentValue);

@@ -75,7 +75,12 @@ namespace ZMediaTask.Presentation.ViewModels
         private static string FormatArmy(Army army)
         {
             if (army == null) return "—";
-            return $"{army.Units.Count} units ({army.Side})";
+            return $"{army.Units.Count} units ({GetSideLabel(army.Side)})";
+        }
+
+        private static string GetSideLabel(ArmySide side)
+        {
+            return side == ArmySide.Left ? "Blue" : "Red";
         }
     }
 }

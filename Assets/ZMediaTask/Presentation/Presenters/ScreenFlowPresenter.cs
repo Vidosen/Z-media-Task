@@ -1,11 +1,9 @@
-using System;
 using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ZMediaTask.Application.Army;
 using ZMediaTask.Application.Battle;
-using ZMediaTask.Domain.Army;
-using ZMediaTask.Domain.Combat;
+using ZMediaTask.Presentation.Services;
 using ZMediaTask.Presentation.ViewModels;
 
 namespace ZMediaTask.Presentation.Presenters
@@ -30,7 +28,11 @@ namespace ZMediaTask.Presentation.Presenters
         private ResultViewModel _resultVm;
 
         private WrathCardPresenter _wrathCardPresenter;
+        private SafeAreaController _safeArea;
+        private BattleSessionController _battleSession;
+        private PreviewFormationUpdater _formationUpdater;
 
+        private VisualElement _uiRoot;
         private VisualElement _mainMenuRoot;
         private VisualElement _preparationRoot;
         private VisualElement _battleHudRoot;
@@ -42,8 +44,6 @@ namespace ZMediaTask.Presentation.Presenters
         private TryCastWrathUseCase _tryCastWrathUseCase;
 
         public ReadOnlyReactiveProperty<GameFlowState> CurrentState => _currentState;
-        public BattleHudViewModel BattleHudVm => _battleHudVm;
-        public WrathViewModel WrathVm => _wrathVm;
 
         public void Construct(
             ArmyRandomizationUseCase randomizationUseCase,
@@ -59,7 +59,11 @@ namespace ZMediaTask.Presentation.Presenters
 
         private void Start()
         {
-            var root = _uiDocument.rootVisualElement;
+            _uiRoot = _uiDocument.rootVisualElement;
+            var safeAreaRoot = _uiRoot.Q<VisualElement>("SafeAreaRoot") ?? _uiRoot;
+            _safeArea = new SafeAreaController(_uiRoot, safeAreaRoot);
+
+            var root = _uiRoot;
 
             _mainMenuRoot = root.Q<VisualElement>("MainMenuScreen");
             _preparationRoot = root.Q<VisualElement>("PreparationScreen");
@@ -72,6 +76,16 @@ namespace ZMediaTask.Presentation.Presenters
             _wrathVm = new WrathViewModel();
             _resultVm = new ResultViewModel();
 
+            _formationUpdater = new PreviewFormationUpdater(_battleContextFactory);
+            _battleSession = new BattleSessionController(
+                _battleLoopService, _tryCastWrathUseCase,
+                _battleHudVm, _wrathVm, _resultVm,
+                _unitsPresenter, _vfxPresenter,
+                onBattleFinished: () => _currentState.Value = GameFlowState.Result);
+
+            if (_battleRunner)
+                _battleRunner.Construct(_battleLoopService, _battleSession);
+
             BindMainMenu(root);
             BindPreparation(root);
             BindBattleHud(root);
@@ -81,8 +95,14 @@ namespace ZMediaTask.Presentation.Presenters
             _currentState.Value = GameFlowState.MainMenu;
         }
 
+        private void Update()
+        {
+            _safeArea?.Refresh();
+        }
+
         private void OnDestroy()
         {
+            _safeArea?.Dispose();
             _wrathCardPresenter?.Dispose();
             _disposables.Dispose();
             _mainMenuVm?.Dispose();
@@ -97,9 +117,7 @@ namespace ZMediaTask.Presentation.Presenters
         {
             var playButton = root.Q<Button>("PlayButton");
             if (playButton != null)
-            {
                 playButton.clicked += () => _mainMenuVm.RequestStart();
-            }
 
             _mainMenuVm.StartRequested.Subscribe(_ =>
             {
@@ -122,21 +140,16 @@ namespace ZMediaTask.Presentation.Presenters
             if (startBattleBtn != null) startBattleBtn.clicked += () => _preparationVm.RequestStart();
 
             if (leftPreviewLabel != null)
-            {
                 _preparationVm.LeftPreview.Subscribe(t => leftPreviewLabel.text = t).AddTo(_disposables);
-            }
 
             if (rightPreviewLabel != null)
-            {
                 _preparationVm.RightPreview.Subscribe(t => rightPreviewLabel.text = t).AddTo(_disposables);
-            }
 
             _preparationVm.Armies.Subscribe(pair =>
             {
-                if (pair.Left != null && pair.Right != null && _unitsPresenter != null)
+                if (pair is { Left: not null, Right: not null } && _unitsPresenter)
                 {
-                    var formation = FormationStrategyPicker.PickRandom(Environment.TickCount);
-                    _battleContextFactory.SetFormationStrategy(formation);
+                    _formationUpdater.Update(pair);
                     var previewContext = _battleContextFactory.Create(pair);
                     _unitsPresenter.SpawnPreview(previewContext);
                 }
@@ -144,7 +157,9 @@ namespace ZMediaTask.Presentation.Presenters
 
             _preparationVm.StartRequested.Subscribe(armies =>
             {
-                StartBattle(armies);
+                _battleSession.StartBattle(armies);
+                if (_battleRunner) _battleRunner.StartRunning();
+                _currentState.Value = GameFlowState.Running;
             }).AddTo(_disposables);
         }
 
@@ -155,22 +170,17 @@ namespace ZMediaTask.Presentation.Presenters
             var timerLabel = root.Q<Label>("TimerLabel");
 
             if (leftAliveLabel != null)
-            {
                 _battleHudVm.LeftAlive.Subscribe(v => leftAliveLabel.text = v.ToString()).AddTo(_disposables);
-            }
 
             if (rightAliveLabel != null)
-            {
                 _battleHudVm.RightAlive.Subscribe(v => rightAliveLabel.text = v.ToString()).AddTo(_disposables);
-            }
 
             if (timerLabel != null)
-            {
                 _battleHudVm.TimerText.Subscribe(t => timerLabel.text = t).AddTo(_disposables);
-            }
 
             _wrathCardPresenter = new WrathCardPresenter(
-                root, _wrathVm, _mainCamera, _arenaLayer, this, _wrathTargeting);
+                root, _wrathVm, _mainCamera, _arenaLayer,
+                _battleSession.TryCastWrath, _wrathTargeting);
 
             var bopLeftFill = root.Q<VisualElement>("BopLeftFill");
             if (bopLeftFill != null)
@@ -188,108 +198,15 @@ namespace ZMediaTask.Presentation.Presenters
             var returnBtn = root.Q<Button>("ReturnButton");
 
             if (winnerLabel != null)
-            {
                 _resultVm.WinnerText.Subscribe(t => winnerLabel.text = t).AddTo(_disposables);
-            }
 
             if (returnBtn != null)
-            {
                 returnBtn.clicked += () => _resultVm.RequestReturn();
-            }
 
             _resultVm.ReturnRequested.Subscribe(_ =>
             {
                 _currentState.Value = GameFlowState.MainMenu;
             }).AddTo(_disposables);
-        }
-
-        private void StartBattle(ArmyPair armies)
-        {
-            _battleLoopService.Initialize(armies);
-            _battleLoopService.Start();
-            _battleHudVm.UpdateFromContext(_battleLoopService.Context);
-
-            if (_battleLoopService.Context.WrathMeters.TryGetValue(ArmySide.Left, out var meter))
-            {
-                _wrathVm.UpdateFromMeter(meter);
-            }
-
-            if (_unitsPresenter != null)
-            {
-                _unitsPresenter.SpawnUnits(_battleLoopService.Context);
-            }
-
-            if (_battleRunner != null)
-            {
-                _battleRunner.StartRunning();
-            }
-
-            _currentState.Value = GameFlowState.Running;
-        }
-
-        public void OnBattleTick()
-        {
-            _battleHudVm.UpdateFromContext(_battleLoopService.Context);
-
-            if (_battleLoopService.Context.WrathMeters.TryGetValue(ArmySide.Left, out var meter))
-            {
-                _wrathVm.UpdateFromMeter(meter);
-            }
-
-            if (_vfxPresenter != null && _battleLoopService.LastTickEvents.Count > 0)
-            {
-                _vfxPresenter.ProcessEvents(_battleLoopService.LastTickEvents);
-            }
-
-            if (_unitsPresenter != null)
-            {
-                var events = _battleLoopService.LastTickEvents;
-                for (var i = 0; i < events.Count; i++)
-                {
-                    var evt = events[i];
-                    if (evt.Kind == BattleEventKind.UnitDamaged && evt.UnitId.HasValue)
-                    {
-                        _unitsPresenter.FlashUnit(evt.UnitId.Value);
-                    }
-                }
-
-                _unitsPresenter.SyncPositions(_battleLoopService.Context);
-            }
-
-            if (_battleLoopService.StateMachine.Current == BattlePhase.Finished)
-            {
-                if (_battleRunner != null)
-                {
-                    _battleRunner.StopRunning();
-                }
-
-                _resultVm.SetWinner(_battleLoopService.Context.WinnerSide);
-                _currentState.Value = GameFlowState.Result;
-            }
-        }
-
-        public void TryCastWrath(BattlePoint targetPoint)
-        {
-            if (_battleLoopService.StateMachine.Current != BattlePhase.Running)
-            {
-                return;
-            }
-
-            if (!_battleLoopService.Context.WrathMeters.TryGetValue(ArmySide.Left, out var meter))
-            {
-                return;
-            }
-
-            var result = _tryCastWrathUseCase.TryCast(
-                meter, ArmySide.Left, targetPoint, _battleLoopService.Context.ElapsedTimeSec);
-            if (!result.Success)
-            {
-                return;
-            }
-
-            _battleLoopService.SetWrathMeter(ArmySide.Left, result.MeterAfter);
-            _battleLoopService.EnqueueWrathCast(result.Command!.Value);
-            _wrathVm.UpdateFromMeter(result.MeterAfter);
         }
 
         private void OnStateChanged(GameFlowState state)
@@ -300,33 +217,15 @@ namespace ZMediaTask.Presentation.Presenters
             SetScreenVisible(_resultRoot, state == GameFlowState.Result);
 
             if (state == GameFlowState.Preparation)
-            {
                 _preparationVm.RandomizeBoth();
-            }
 
             if (state == GameFlowState.MainMenu)
-            {
-                if (_battleLoopService.StateMachine.Current != BattlePhase.Preparation)
-                {
-                    _battleLoopService.Reset();
-                }
-
-                if (_unitsPresenter != null)
-                {
-                    _unitsPresenter.ClearUnits();
-                }
-
-                _vfxPresenter?.ClearAll();
-            }
+                _battleSession.Cleanup();
         }
 
         private static void SetScreenVisible(VisualElement element, bool visible)
         {
-            if (element == null)
-            {
-                return;
-            }
-
+            if (element == null) return;
             element.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
         }
     }
