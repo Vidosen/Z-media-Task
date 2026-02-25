@@ -1,0 +1,111 @@
+/* ══════════════════════════════════════════════════════════════
+   WrathCard.uss — CCG-style card deck for God's Wrath ability
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Deck Container ── */
+
+.wrath-deck-container {
+    position: absolute;
+    bottom: -90px;
+    align-self: center;
+    width: 120px;
+    height: 180px;
+    overflow: visible;
+}
+
+/* ── Card Element ── */
+
+.wrath-card {
+    width: 100px;
+    height: 150px;
+    align-self: center;
+    background-color: rgba(15, 12, 30, 0.95);
+    border-width: 2px;
+    border-color: rgb(218, 165, 32);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.wrath-card--disabled {
+    opacity: 0.4;
+    border-color: rgb(80, 80, 80);
+}
+
+/* ── Card Art Container ── */
+
+.wrath-card-art {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Charge Fill ── */
+
+.wrath-card-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0%;
+    background-color: rgba(218, 165, 32, 0.25);
+    transition-duration: 300ms;
+    transition-property: height;
+    transition-timing-function: ease-in-out;
+}
+
+/* ── Glow Overlay ── */
+
+.wrath-card-glow {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-width: 2px;
+    border-color: rgb(255, 215, 0);
+    border-radius: 6px;
+    background-color: rgba(255, 215, 0, 0.08);
+    opacity: 0;
+    transition-duration: 400ms;
+    transition-property: opacity;
+    transition-timing-function: ease-in-out;
+}
+
+/* ── Title ── */
+
+.wrath-card-title {
+    font-size: 9px;
+    -unity-font-style: bold;
+    color: rgb(218, 165, 32);
+    letter-spacing: 2px;
+    -unity-text-align: middle-center;
+    margin-top: 12px;
+    -unity-font-definition: url("../Fonts/Cinzel-Bold.ttf");
+}
+
+/* ── Icon Placeholder ── */
+
+.wrath-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    border-width: 2px;
+    border-color: rgb(218, 165, 32);
+    background-color: rgba(218, 165, 32, 0.15);
+    align-self: center;
+    margin-top: 8px;
+}
+
+/* ── Charge Label ── */
+
+.wrath-card-charge-label {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgba(0, 0, 0, 0.6);
+    -unity-text-align: middle-center;
+    margin-top: 8px;
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
+}

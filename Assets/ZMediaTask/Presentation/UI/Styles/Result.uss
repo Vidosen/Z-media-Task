@@ -1,0 +1,14 @@
+/* ── Result Screen ── */
+
+.label-winner {
+    font-size: 32px;
+    -unity-font-style: bold;
+    color: rgb(255, 215, 100);
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgba(180, 130, 20, 0.6);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: 2px;
+    -unity-text-align: middle-center;
+    margin: 16px 0;
+    -unity-font-definition: url("../Fonts/Cinzel-Bold.ttf");
+}

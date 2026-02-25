@@ -1,3 +1,7 @@
+/* ══════════════════════════════════════════════════════════════
+   Preparation.uss — Faction Cards (RPG theme)
+   ══════════════════════════════════════════════════════════════ */
+
 .preparation-container {
     flex-direction: column;
     align-items: center;
@@ -9,26 +13,58 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    margin: 16px 0;
+    margin: 12px 0;
 }
 
 .army-preview-panel {
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 8px;
-    padding: 16px;
-    width: 80%;
+    border-radius: 10px;
+    padding: 14px 16px;
+    width: 85%;
     align-items: center;
+    margin: 4px 0;
 }
 
 .army-label {
-    font-size: 16px;
-    color: rgb(180, 180, 180);
-    margin-bottom: 8px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    margin-bottom: 6px;
+    letter-spacing: 2px;
+    -unity-font-definition: url("../Fonts/Cinzel-Bold.ttf");
 }
 
 .randomize-row {
     flex-direction: column;
     align-items: center;
-    width: 80%;
-    margin: 12px 0;
+    width: 85%;
+    margin: 8px 0;
+}
+
+/* ── Faction Card Base ── */
+
+.faction-card {
+    border-width: 2px;
+    border-radius: 10px;
+    padding: 14px 16px;
+}
+
+/* ── Blue Faction ── */
+
+.faction-blue {
+    border-color: rgb(70, 130, 220);
+    background-color: rgba(40, 80, 160, 0.2);
+}
+
+.label-faction-blue {
+    color: rgb(120, 175, 255);
+}
+
+/* ── Red Faction ── */
+
+.faction-red {
+    border-color: rgb(220, 70, 70);
+    background-color: rgba(160, 40, 40, 0.2);
+}
+
+.label-faction-red {
+    color: rgb(255, 120, 120);
 }
