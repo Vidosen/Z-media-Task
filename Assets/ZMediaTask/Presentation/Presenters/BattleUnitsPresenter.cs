@@ -21,6 +21,11 @@ namespace ZMediaTask.Presentation.Presenters
         [SerializeField] private Shader _unitFlashShader;
 
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int Surface = Shader.PropertyToID("_Surface");
+        private static readonly int Blend = Shader.PropertyToID("_Blend");
+        private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
+        private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
+        private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
 
         private readonly Dictionary<int, GameObject> _unitObjects = new();
         private readonly Dictionary<int, Renderer> _unitRenderers = new();
@@ -235,12 +240,12 @@ namespace ZMediaTask.Presentation.Presenters
 
         private static void SetMaterialTransparent(Material mat)
         {
-            mat.SetFloat("_Surface", 1f);
-            mat.SetFloat("_Blend", 0f);
+            mat.SetFloat(Surface, 1f);
+            mat.SetFloat(Blend, 0f);
             mat.SetOverrideTag("RenderType", "Transparent");
-            mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-            mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            mat.SetInt("_ZWrite", 0);
+            mat.SetInt(SrcBlend, (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            mat.SetInt(DstBlend, (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            mat.SetInt(ZWrite, 0);
             mat.DisableKeyword("_ALPHATEST_ON");
             mat.EnableKeyword("_ALPHABLEND_ON");
             mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
@@ -268,9 +273,9 @@ namespace ZMediaTask.Presentation.Presenters
                 : new Color(0.9f, 0.2f, 0.2f);
 
             var renderer = go.GetComponentInChildren<Renderer>();
-            if (renderer != null)
+            if (renderer)
             {
-                if (_unitFlashShader != null)
+                if (_unitFlashShader)
                 {
                     var mat = new Material(_unitFlashShader);
                     mat.SetColor(BaseColorId, color);
